@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './dashboard.css';  // Import the CSS for styling
+import ContractForm from './ContractForm';  // Import ContractForm component
+
 
 
 const Dashboard = () => {
@@ -12,6 +14,8 @@ const Dashboard = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [activeSection, setActiveSection] = useState('Home'); // Track which section is active
+  const [showContractForm, setShowContractForm] = useState(false); // Track if contract form should be displayed
+  const [formType, setFormType] = useState(''); // Track whether creating or modifying contract
 
   const toggleSidebar = () => {
     setIsCollapsed(!isCollapsed);
@@ -28,6 +32,16 @@ const Dashboard = () => {
     };
     fetchData();
   }, []);
+
+  const handleContractSubmit = (formData) => {
+    console.log('Form submitted:', formData);
+    // Handle form submission logic here (create or modify)
+    if (formType === 'create') {
+      console.log('Creating new contract:', formData);
+    } else if (formType === 'modify') {
+      console.log('Modifying existing contract:', formData);
+    }
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -50,12 +64,38 @@ const Dashboard = () => {
             </div>
           </>
         );
-      case 'Contratos':
+        case 'Contratos':
         return (
           <div className="content-section">
             <h2>Contratos</h2>
-            <button className="action-button">Crear Contrato</button>
-            <button className="action-button">Modificar Contrato</button>
+            {!showContractForm && (
+              <>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowContractForm(true);
+                    setFormType('create'); // Set form type to "create"
+                  }}
+                >
+                  Crear Contrato
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowContractForm(true);
+                    setFormType('modify'); // Set form type to "modify"
+                  }}
+                >
+                  Modificar Contrato
+                </button>
+              </>
+            )}
+            {showContractForm && (
+              <ContractForm
+                onSubmit={handleContractSubmit}
+                formType={formType} // Pass form type to know if it's creating or modifying
+              />
+            )}
           </div>
         );
       default:
@@ -68,7 +108,8 @@ const Dashboard = () => {
       {/* Sidebar */}
       <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-header">
-          <span className="logo">TUMI CRM</span>
+          <img src="/logo.ico" alt="Logo" className="sidebar-logo" />
+          <span className="logo">EL TUMI</span>
           <button className="toggle-btn" onClick={toggleSidebar}>
             {isCollapsed ? '→' : '←'}
           </button>
