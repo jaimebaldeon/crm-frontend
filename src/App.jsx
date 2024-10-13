@@ -32,7 +32,7 @@ function App() {
       </p> */}
       
       <div className='App'>
-      <Dashboard />
+        <Dashboard />
       </div>
     </>
   )
