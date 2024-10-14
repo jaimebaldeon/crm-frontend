@@ -1,0 +1,58 @@
+/* Form Styling */
+.contract-form {
+    display: grid;
+    gap: 15px;
+    width: 100vh;
+}
+
+.contract-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.contract-form .form-group label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.contract-form .form-group input,
+.contract-form .form-group textarea {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.contract-form .form-group input:focus,
+.contract-form .form-group textarea:focus {
+    border-color: #1abc9c;
+    outline: none;
+    box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
+}
+
+.contract-form .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.contract-form .submit-button {
+    padding: 12px;
+    background-color: #1abc9c;
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+.contract-form .submit-button:hover {
+    background-color: #16a085;
+}

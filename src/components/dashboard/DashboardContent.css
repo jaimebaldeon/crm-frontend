@@ -1,0 +1,25 @@
+/* Main content area */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+    background-color: #ecf0f1;
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: 80px;
+}
+
+/* Content section styling */
+.content-section {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #2c3e50;
+}

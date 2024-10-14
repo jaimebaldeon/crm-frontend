@@ -1,6 +1,7 @@
 // components/ContractForm.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import './ContractForm.css'
 
 const ContractForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({

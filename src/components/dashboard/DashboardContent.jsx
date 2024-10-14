@@ -1,25 +1,16 @@
-// components/Dashboard.js
-import React, { useEffect, useState } from 'react';
+// components/dashboard/DashboardContent.jsx
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './dashboard.css';  // Import the CSS for styling
-import ContractForm from './ContractForm';  // Import ContractForm component
+import ContractForm from '../contracts/ContractForm'; // Import contract form
+import './DashboardContent.css'; // Use same CSS file as Dashboard
 
-
-
-const Dashboard = () => {
+const DashboardContent = ({ activeSection }) => {
   const [data, setData] = useState({
     clientCount: 0,
     upcomingMaintenance: [],
   });
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [activeSection, setActiveSection] = useState('Home'); // Track which section is active
-  const [showContractForm, setShowContractForm] = useState(false); // Track if contract form should be displayed
-  const [formType, setFormType] = useState(''); // Track whether creating or modifying contract
-
-  const toggleSidebar = () => {
-    setIsCollapsed(!isCollapsed);
-  };
+  const [showContractForm, setShowContractForm] = useState(false);
+  const [formType, setFormType] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +26,6 @@ const Dashboard = () => {
 
   const handleContractSubmit = (formData) => {
     console.log('Form submitted:', formData);
-    // Handle form submission logic here (create or modify)
     if (formType === 'create') {
       console.log('Creating new contract:', formData);
     } else if (formType === 'modify') {
@@ -64,7 +54,7 @@ const Dashboard = () => {
             </div>
           </>
         );
-        case 'Contratos':
+      case 'Contratos':
         return (
           <div className="content-section">
             <h2>Contratos</h2>
@@ -74,7 +64,7 @@ const Dashboard = () => {
                   className="action-button"
                   onClick={() => {
                     setShowContractForm(true);
-                    setFormType('create'); // Set form type to "create"
+                    setFormType('create');
                   }}
                 >
                   Crear Contrato
@@ -83,7 +73,7 @@ const Dashboard = () => {
                   className="action-button"
                   onClick={() => {
                     setShowContractForm(true);
-                    setFormType('modify'); // Set form type to "modify"
+                    setFormType('modify');
                   }}
                 >
                   Modificar Contrato
@@ -93,7 +83,7 @@ const Dashboard = () => {
             {showContractForm && (
               <ContractForm
                 onSubmit={handleContractSubmit}
-                formType={formType} // Pass form type to know if it's creating or modifying
+                formType={formType}
               />
             )}
           </div>
@@ -103,33 +93,7 @@ const Dashboard = () => {
     }
   };
 
-  return (
-    <div className="dashboard-container">
-      {/* Sidebar */}
-      <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-header">
-          <img src="/logo.ico" alt="Logo" className="sidebar-logo" />
-          <span className="logo">EL TUMI</span>
-          <button className="toggle-btn" onClick={toggleSidebar}>
-            {isCollapsed ? '→' : '←'}
-          </button>
-        </div>
-        <ul className="menu-items">
-          <li className={`menu-item ${activeSection === 'Home' ? 'active' : ''}`} onClick={() => setActiveSection('Home')}>Home</li>
-          <li className={`menu-item ${activeSection === 'Contratos' ? 'active' : ''}`} onClick={() => setActiveSection('Contratos')}>Contratos</li>
-          <li className="menu-item">Analytics</li>
-          <li className="menu-item">Settings</li>
-          <li className="menu-item">Profile</li>
-        </ul>
-      </div>
-
-      {/* Main Content */}
-      <div className="main-content">
-        <h1>Dashboard</h1>
-        {renderContent()}  {/* Dynamically renders the content based on active section */}
-      </div>
-    </div>
-  );
+  return <>{renderContent()}</>;
 };
 
-export default Dashboard;
+export default DashboardContent;
