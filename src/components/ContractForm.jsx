@@ -1,5 +1,6 @@
 // components/ContractForm.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ContractForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -10,12 +11,29 @@ const ContractForm = ({ onSubmit }) => {
     ciudad: '',
     provincia: '',
     actividad: '',
+    tipoEstablecimiento: '',
     telefono: '',
     iban: '',
     horario: '',
     direccionFacturacion: '',
     notasAdicionales: ''
   });
+
+  const [tiposEstablecimiento, setTiposEstablecimiento] = useState([]);
+
+   // Fetch data from the API
+   const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/tipoEstablecimiento');
+      setTiposEstablecimiento(response.data);
+    } catch (error) {
+      console.error('Error fetching tipo establecimiento data', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // Call the API when the component mounts
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,6 +74,23 @@ const ContractForm = ({ onSubmit }) => {
         <label>Actividad</label>
         <input type="text" name="actividad" value={formData.actividad} onChange={handleChange} required />
       </div>
+      <div className="form-group">
+        <label>Tipo Establecimiento</label>
+        <select
+          name="tipoEstablecimiento"
+          value={formData.tipoEstablecimiento}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Seleccione un tipo</option>
+          {tiposEstablecimiento.map((tipo, index) => (
+            <option key={index} value={tipo.general}>
+              {tipo.general}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="form-group">
         <label>Teléfono</label>
         <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} required />
