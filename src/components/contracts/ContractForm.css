@@ -10,6 +10,26 @@
     flex-direction: column;
 }
 
+.contract-form .form-row {
+    display: flex;
+    gap: 10px;
+}
+  
+.contract-form .form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.contract-form .form-column input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .contract-form .form-group label {
     font-size: 14px;
     font-weight: bold;
@@ -34,10 +54,63 @@
     box-shadow: 0 0 5px rgba(26, 188, 156, 0.5);
 }
 
+.contract-form .calle-input {
+    flex: 3;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .contract-form .numero-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .contract-form .form-group textarea {
     resize: vertical;
     min-height: 100px;
 }
+
+.contract-form .custom-select {
+    appearance: none;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23bdc3c7' d='M2 0L0 2h4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .contract-form .custom-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+  }
+  
+  .contract-form .custom-select:hover {
+    border-color: #3498db;
+  }
+  
+  .contract-form .custom-select option {
+    color: #2c3e50;
+  }
+
 
 .contract-form .submit-button {
     padding: 12px;
