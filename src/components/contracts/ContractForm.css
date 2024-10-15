@@ -129,3 +129,17 @@
 .contract-form .submit-button:hover {
     background-color: #16a085;
 }
+
+.change-address-btn {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #d0d0d0;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .change-address-btn:hover {
+    background-color: #4c514a;
+  }

@@ -24,6 +24,8 @@ const ContractForm = ({ onSubmit }) => {
   });
 
   const [tiposEstablecimiento, setTiposEstablecimiento] = useState([]);
+  const [showAddressForm, setShowAddressForm] = useState(false); // State to toggle AddressForm
+
 
    // Fetch data from the API
    const fetchData = async () => {
@@ -33,6 +35,10 @@ const ContractForm = ({ onSubmit }) => {
     } catch (error) {
       console.error('Error fetching tipo establecimiento data', error);
     }
+  };
+
+  const toggleAddressForm = () => {
+    setShowAddressForm(!showAddressForm);
   };
 
   useEffect(() => {
@@ -97,9 +103,14 @@ const ContractForm = ({ onSubmit }) => {
         <input type="text" name="horario" value={formData.horario} onChange={handleChange} required />
       </div>
       <div className="form-group">
-        <label>Dirección Facturación</label>
-        <input type="text" name="direccionFacturacion" value={formData.direccionFacturacion} onChange={handleChange} placeholder="C/ Minas 9; Brunete; 28691; Madrid" required />
+        <button type="button" onClick={toggleAddressForm} className="change-address-btn">
+          Cambiar Dirección Facturación
+        </button>
       </div>
+      {/* Show AddressForm component on button click */}
+      {showAddressForm && (
+        <AddressForm formData={formData} handleChange={handleChange} />
+      )}
       <div className="form-group">
         <label>Notas Adicionales</label>
         <textarea name="notasAdicionales" value={formData.notasAdicionales} onChange={handleChange}></textarea>
