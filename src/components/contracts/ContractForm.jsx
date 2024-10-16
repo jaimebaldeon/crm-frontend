@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ContractForm.css'
+import useForm from '../../hooks/useForm';
 import AddressForm from './AddressForm'; 
 import { validateForm } from './validators/validateForm';
 import { transformData } from '../../utils/transformData';
@@ -10,34 +11,8 @@ import { submitContractForm } from '../../services/contractService';
 
 
 const ContractForm = ({ onSubmit }) => {
-  const [formData, setFormData] = useState({
-    nombreCliente: '',
-    calle: '',
-    numero: '',
-    cif: '',
-    cp: '',
-    ciudad: '',
-    provincia: '',
-    actividad: '',
-    tipoEstablecimiento: '',
-    telefono: '',
-    iban: '',
-    horario: '',
-    direccionFacturacion: {},
-    notasAdicionales: ''
-  });
-
-  const [direccionFacturacion, setDireccionFacturacion] = useState({
-    calle: '',
-    numero: '',
-    cif: '',
-    cp: '',
-    ciudad: '',
-    provincia: ''
-  })
 
   const [tiposEstablecimiento, setTiposEstablecimiento] = useState([]);
-  const [showAddressForm, setShowAddressForm] = useState(false); // State to toggle AddressForm
 
 
    // Fetch data from the API
@@ -50,73 +25,57 @@ const ContractForm = ({ onSubmit }) => {
     }
   };
 
-  const toggleAddressForm = () => {
-    setShowAddressForm(!showAddressForm);
-    if (!showAddressForm) {
-      setFormData({...formData, direccionFacturacion: direccionFacturacion})
-    } 
-    else {
-      setFormData({...formData, direccionFacturacion: ''})
-    }
-  };
+  
 
   useEffect(() => {
     fetchData(); // Call the API when the component mounts
   }, []);
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value.toUpperCase() });
-  };
-
-  const handleChangeDirFact = (e) => {
-    const updatedDireccionFacturacion = {
-      ...direccionFacturacion,
-      [e.target.name]: e.target.value.toUpperCase()
-    };
-    setDireccionFacturacion(updatedDireccionFacturacion);
-    setFormData({ ...formData, direccionFacturacion: updatedDireccionFacturacion });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validate the form
-    const errors = validateForm(formData);
-    if (errors.length > 0) {
-      // Handle errors (e.g., show them to the user)
-      alert(errors.join("\n"));
-      return; // Stop the form submission
+  const { formData, errors, handleInputChange, handleDirFactChange, showAddressForm, toggleAddressForm, handleSubmit} = useForm({
+    initialValues: {
+      nombreCliente: '',
+      calle: '',
+      numero: '',
+      cif: '',
+      cp: '',
+      ciudad: '',
+      provincia: '',
+      actividad: '',
+      tipoEstablecimiento: '',
+      telefono: '',
+      iban: '',
+      horario: '',
+      direccionFacturacion: {},
+      notasAdicionales: ''
+    },
+    validate: validateForm,
+    onSubmit: async (values) => {
+      const transformedData = transformData(values);
+      try {
+        const response = await submitContractForm(transformedData);
+        onSubmit(response); // Trigger parent callback after successful API submission
+      } catch (error) {
+        alert('Error submitting form: ' + error.message);
+      }
     }
-
-    // Data Transformation: Set direccionFacturacion if it's empty
-    const transformedData = transformData(formData);
-
-
-    // If no errors, proceed with the form submission
-    try {
-      const response = await submitContractForm(transformedData);
-      onSubmit(response); // Trigger parent callback after successful API submission
-    } catch (error) {
-      alert('Error submitting form: ' + error.message);
-    }
-  };
+  });
 
   return (
     <form className="contract-form" onSubmit={handleSubmit}>
       <div className="form-group">
         <label>Nombre Cliente</label>
-        <input type="text" name="nombreCliente" value={formData.nombreCliente} onChange={handleChange} required />
+        <input type="text" name="nombreCliente" value={formData.nombreCliente} onChange={handleInputChange} required />
       </div>
-      <AddressForm formData={formData} handleChange={handleChange} />
+      <AddressForm formData={formData} handleChange={handleInputChange} />
       <div className="form-group">
         <div className='form-row'>
           <div className='form-column'>
             <label>CIF</label>
-            <input type="text" name="cif" value={formData.cif} onChange={handleChange} required />
+            <input type="text" name="cif" value={formData.cif} onChange={handleInputChange} required />
           </div>
           <div className="form-column">
             <label>Actividad</label>
-            <input type="text" name="actividad" value={formData.actividad} onChange={handleChange} required />
+            <input type="text" name="actividad" value={formData.actividad} onChange={handleInputChange} required />
           </div>
         </div>
       </div>
@@ -125,7 +84,7 @@ const ContractForm = ({ onSubmit }) => {
         <select
           name="tipoEstablecimiento"
           value={formData.tipoEstablecimiento}
-          onChange={handleChange}
+          onChange={handleInputChange}
           required
           className='custom-select'
         >
@@ -139,15 +98,15 @@ const ContractForm = ({ onSubmit }) => {
       </div>
       <div className="form-group">
         <label>Teléfono</label>
-        <input type="tel" name="telefono" value={formData.telefono} onChange={handleChange} required />
+        <input type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} required />
       </div>
       <div className="form-group">
         <label>IBAN</label>
-        <input type="text" name="iban" value={formData.iban} onChange={handleChange} required />
+        <input type="text" name="iban" value={formData.iban} onChange={handleInputChange} required />
       </div>
       <div className="form-group">
         <label>Horario</label>
-        <input type="text" name="horario" value={formData.horario} onChange={handleChange} />
+        <input type="text" name="horario" value={formData.horario} onChange={handleInputChange} />
       </div>
       <div className="form-group">
         <button type="button" onClick={toggleAddressForm} className="change-address-btn">
@@ -156,11 +115,11 @@ const ContractForm = ({ onSubmit }) => {
       </div>
       {/* Show AddressForm component on button click */}
       {showAddressForm && (
-        <AddressForm formData={formData.direccionFacturacion} handleChange={handleChangeDirFact} />
+        <AddressForm formData={formData.direccionFacturacion} handleChange={handleDirFactChange} />
       )}
       <div className="form-group">
         <label>Notas Adicionales</label>
-        <textarea name="notasAdicionales" value={formData.notasAdicionales} onChange={handleChange}></textarea>
+        <textarea name="notasAdicionales" value={formData.notasAdicionales} onChange={handleInputChange}></textarea>
       </div>
       <button type="submit" className="submit-button">Siguiente</button>
     </form>
