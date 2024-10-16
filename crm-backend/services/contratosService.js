@@ -20,7 +20,7 @@ exports.saveContract = async (contractData) => {
 
   const query = `
   INSERT INTO clientes (Nombre, CIF, Direccion, CP, Ciudad, Provincia, Actividad, Horario, IBAN, Telefono, Direccion_Facturacion, Categoria_Establecimiento)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id_cliente;
   `;
   const idCliente = -1
 
