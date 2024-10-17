@@ -6,7 +6,6 @@ const useForm = ({ initialValues, validate, onSubmit }) => {
   const [direccionFacturacion, setDireccionFacturacion] = useState({
     calle: '',
     numero: '',
-    cif: '',
     cp: '',
     ciudad: '',
     provincia: ''
