@@ -13,10 +13,6 @@ app.use(bodyParser.json());
 
 // API Routes
 app.use('/api', routes);
-// const dashboardRoutes = require('./routes/dashboard');
-// app.use('/api/dashboard', dashboardRoutes);
-// const tipoEstablecimientoRoutes = require('./routes/tipoEstablecimiento');
-// app.use('/api/tipoEstablecimiento', tipoEstablecimientoRoutes);
 
 // Error handling middleware
 app.use(require('./utils/errorHandler'));
