@@ -1,127 +1,122 @@
-// components/ContractForm.jsx
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './ContractForm.css'
-import useForm from '../../hooks/useForm';
-import AddressForm from './AddressForm'; 
-import { validateForm } from './validators/validateForm';
-import { transformData } from '../../utils/transformData';
-import { submitContractForm } from '../../services/contractService';
+import React, { useState } from 'react';
+import './ContractForm.css'; // Import CSS for ContractForm
 
-
-
-const ContractForm = ({ onSubmit }) => {
-
-  const [tiposEstablecimiento, setTiposEstablecimiento] = useState([]);
-
-
-   // Fetch data from the API
-   const fetchData = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/api/tipoEstablecimiento');
-      setTiposEstablecimiento(response.data);
-    } catch (error) {
-      console.error('Error fetching tipo establecimiento data', error);
-    }
-  };
-
-  
-
-  useEffect(() => {
-    fetchData(); // Call the API when the component mounts
-  }, []);
-
-  const { formData, errors, handleInputChange, handleDirFactChange, showAddressForm, toggleAddressForm, handleSubmit} = useForm({
-    initialValues: {
-      nombreCliente: '',
-      calle: '',
-      numero: '',
-      cif: '',
-      cp: '',
-      ciudad: '',
-      provincia: '',
-      actividad: '',
-      tipoEstablecimiento: '',
-      telefono: '',
-      iban: '',
-      horario: '',
-      direccionFacturacion: {},
-      notasAdicionales: ''
-    },
-    validate: validateForm,
-    onSubmit: async (values) => {
-      const transformedData = transformData(values);
-      try {
-        const response = await submitContractForm(transformedData);
-        onSubmit(response); // Trigger parent callback after successful API submission
-      } catch (error) {
-        alert('Error submitting form: ' + error.message);
+const ContractForm = ({ client, onSubmit }) => {
+  const [contractData, setContractData] = useState({
+    clientId: client, // Initialize with the created client's ID
+    products: [
+      {
+        productoServicio: '',
+        cantidad: '',
+        precio: ''
       }
-    }
+    ], // Initialize with one product/service entry
   });
 
+  // Handle input change for the contract form fields (not products/services)
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setContractData({
+      ...contractData,
+      [name]: value,
+    });
+  };
+
+  // Handle input change for the products/services fields
+  const handleProductChange = (index, e) => {
+    const { name, value } = e.target;
+    const updatedProducts = contractData.products.map((product, i) => (
+      i === index ? { ...product, [name]: value } : product
+    ));
+    setContractData({
+      ...contractData,
+      products: updatedProducts,
+    });
+  };
+
+  // Add new product/service entry
+  const handleAddProduct = () => {
+    setContractData({
+      ...contractData,
+      products: [...contractData.products, { productoServicio: '', cantidad: '', precio: '' }],
+    });
+  };
+
+  // Remove a product/service entry
+  const handleRemoveProduct = (index) => {
+    const updatedProducts = contractData.products.filter((_, i) => i !== index);
+    setContractData({
+      ...contractData,
+      products: updatedProducts,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(contractData); // Pass contract data to parent component for handling
+  };
+
   return (
-    <form className="contract-form" onSubmit={handleSubmit}>
-      <div className="form-group">
-        <label>Nombre Cliente</label>
-        <input type="text" name="nombreCliente" value={formData.nombreCliente} onChange={handleInputChange} required />
-      </div>
-      <AddressForm formData={formData} handleChange={handleInputChange} />
-      <div className="form-group">
-        <div className='form-row'>
-          <div className='form-column'>
-            <label>CIF</label>
-            <input type="text" name="cif" value={formData.cif} onChange={handleInputChange} required />
-          </div>
-          <div className="form-column">
-            <label>Actividad</label>
-            <input type="text" name="actividad" value={formData.actividad} onChange={handleInputChange} required />
-          </div>
+    <form className='contract-form' onSubmit={handleSubmit}>
+      <h2>Create Contract for {client}</h2>
+
+      {/* General Contract Information */}
+      <h3>Products/Services</h3>
+      {/* Dynamically add multiple products/services */}
+      {contractData.products.map((product, index) => (
+        <div key={index} className="product-entry">
+          <label>
+            Producto/Servicio:
+            <input
+              type="text"
+              name="productoServicio"
+              value={product.productoServicio}
+              onChange={(e) => handleProductChange(index, e)}
+            />
+          </label>
+          <div className="form-row">
+            <label className='form-column'>
+                Cantidad:
+                <input
+                type="number"
+                name="cantidad"
+                value={product.cantidad}
+                onChange={(e) => handleProductChange(index, e)}
+                />
+            </label>
+            <label className='form-column'>
+                Precio:
+                <input
+                type="number"
+                step="0.01"
+                name="precio"
+                value={product.precio}
+                onChange={(e) => handleProductChange(index, e)}
+                />
+            </label>
         </div>
-      </div>
-      <div className="form-group">
-        <label>Tipo Establecimiento</label>
-        <select
-          name="tipoEstablecimiento"
-          value={formData.tipoEstablecimiento}
-          onChange={handleInputChange}
-          required
-          className='custom-select'
-        >
-          <option value="">Seleccione un tipo</option>
-          {tiposEstablecimiento.map((tipo, index) => (
-            <option key={index} value={tipo.general}>
-              {tipo.general}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="form-group">
-        <label>Teléfono</label>
-        <input type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} required />
-      </div>
-      <div className="form-group">
-        <label>IBAN</label>
-        <input type="text" name="iban" value={formData.iban} onChange={handleInputChange} required />
-      </div>
-      <div className="form-group">
-        <label>Horario</label>
-        <input type="text" name="horario" value={formData.horario} onChange={handleInputChange} />
-      </div>
-      <div className="form-group">
-        <button type="button" onClick={toggleAddressForm} className="change-address-btn">
-          Cambiar Dirección Facturación
-        </button>
-      </div>
-      {/* Show AddressForm component on button click */}
-      {showAddressForm && (
-        <AddressForm formData={formData.direccionFacturacion} handleChange={handleDirFactChange} />
-      )}
-      <div className="form-group">
-        <label>Notas Adicionales</label>
-        <textarea name="notasAdicionales" value={formData.notasAdicionales} onChange={handleInputChange}></textarea>
-      </div>
-      <button type="submit" className="submit-button">Siguiente</button>
+
+          {/* Button to remove a product/service entry */}
+          {contractData.products.length > 1 && (
+            <button
+              type="button"
+              onClick={() => handleRemoveProduct(index)}
+              className="remove-product-btn"
+            >
+              Remove
+            </button>
+          )}
+        </div>
+      ))}
+
+      {/* Button to add new product/service entry */}
+      <button type="button" onClick={handleAddProduct} className="add-product-btn">
+        Add Product/Service
+      </button>
+
+      {/* Submit form button */}
+      <button type="submit" className="submit-button">Submit Contract</button>
     </form>
   );
 };

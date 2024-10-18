@@ -1,5 +1,5 @@
 import React from 'react';
-import './ContractForm.css'; // Importing the existing style library
+import './ClientForm.css'; // Importing the existing style library
 
 const AddressForm = ({ formData, handleChange }) => {
   return (

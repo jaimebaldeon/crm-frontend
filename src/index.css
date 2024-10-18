@@ -116,14 +116,14 @@ button:focus-visible {
       padding: 15px;
   }
 
-  .contract-form .form-group label,
-  .contract-form .form-group input,
-  .contract-form .form-group textarea,
-  .contract-form .submit-button {
+  .client-form .form-group label,
+  .client-form .form-group input,
+  .client-form .form-group textarea,
+  .client-form .submit-button {
       font-size: 12px;
   }
 
-  .contract-form .submit-button {
+  .client-form .submit-button {
       padding: 10px;
   }
 

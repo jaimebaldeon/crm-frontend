@@ -1,7 +1,8 @@
 // components/dashboard/DashboardContent.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import ContractForm from '../contracts/ContractForm'; // Import contract form
+import ClientForm from '../contracts/ClientForm';
+import ContractForm from '../contracts/ContractForm'; 
 import './DashboardContent.css'; // Use same CSS file as Dashboard
 
 const DashboardContent = ({ activeSection }) => {
@@ -9,7 +10,9 @@ const DashboardContent = ({ activeSection }) => {
     clientCount: 0,
     upcomingMaintenance: [],
   });
+  const [showClientForm, setShowClientForm] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
+  const [createdClient, setCreatedClient] = useState(null); // Store created client data
   const [formType, setFormType] = useState('');
 
   useEffect(() => {
@@ -24,13 +27,21 @@ const DashboardContent = ({ activeSection }) => {
     fetchData();
   }, []);
 
-  const handleContractSubmit = (formData) => {
-    console.log('Form submitted:', formData);
+  const handleClientSubmit = (clientData) => {
+    console.log('Formulario enviado:', clientData);
     if (formType === 'create') {
-      console.log('Creating new contract:', formData);
+      console.log('Creando nuevo cliente:', clientData);
+      setCreatedClient(clientData.clientId); // Store the newly created client data
+      setShowClientForm(false); // Hide the ClientForm after submission
+      setShowContractForm(true); // Automatically show the ContractForm
     } else if (formType === 'modify') {
-      console.log('Modifying existing contract:', formData);
+      console.log('Modifying existing cliente:', clientData);
     }
+  };
+
+  const handleContractSubmit = (contractData) => {
+    console.log('Formulario de contrato enviado:', contractData);
+    // Handle the contract submission logic here (e.g., save contract to database)
   };
 
   const renderContent = () => {
@@ -58,12 +69,12 @@ const DashboardContent = ({ activeSection }) => {
         return (
           <div className="content-section">
             <h2>Contratos</h2>
-            {!showContractForm && (
+            {!showClientForm && !showContractForm && (
               <>
                 <button
                   className="action-button"
                   onClick={() => {
-                    setShowContractForm(true);
+                    setShowClientForm(true);
                     setFormType('create');
                   }}
                 >
@@ -72,7 +83,7 @@ const DashboardContent = ({ activeSection }) => {
                 <button
                   className="action-button"
                   onClick={() => {
-                    setShowContractForm(true);
+                    setShowClientForm(true);
                     setFormType('modify');
                   }}
                 >
@@ -80,12 +91,23 @@ const DashboardContent = ({ activeSection }) => {
                 </button>
               </>
             )}
-            {showContractForm && (
-              <ContractForm
-                onSubmit={handleContractSubmit}
+
+            {/* Show the ClientForm when creating a new client */}
+            {showClientForm && (
+              <ClientForm
+                onSubmit={handleClientSubmit}
                 formType={formType}
               />
             )}
+
+            {/* Show the ContractForm once a client is created */}
+            {showContractForm && createdClient && (
+              <ContractForm
+                client={createdClient} // Pass the created client to the ContractForm
+                onSubmit={handleContractSubmit}
+              />
+            )}
+            
           </div>
         );
       default:
