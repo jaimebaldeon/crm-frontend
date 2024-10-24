@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ContractForm.css'; // Import CSS for ContractForm
+import './ContractForm.css'; 
 import {validateForm} from './validators/validateContractForm'
 import { submitContractForm } from '../../services/contractService';
 

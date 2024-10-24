@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ClientForm from '../contracts/ClientForm';
 import ContractForm from '../contracts/ContractForm'; 
+import ExtintoresForm from '../activos/ExtintoresForm';
 import './DashboardContent.css'; // Use same CSS file as Dashboard
 
 const DashboardContent = ({ activeSection }) => {
@@ -51,7 +52,11 @@ const DashboardContent = ({ activeSection }) => {
       setShowContractForm(false); // Hide the ContractForm after submission
       setShowExtintoresForm(true); // Automatically show the ExtintoresForm
     }
-    
+  };
+
+  const handleExtintoresSubmit = (extintoresData) => {
+    console.log('Formulario de extintores enviado:', extintoresData);
+    // Handle the contract submission logic here (e.g., save contract to database)
   };
 
   const renderContent = () => {
@@ -93,7 +98,11 @@ const DashboardContent = ({ activeSection }) => {
                 <button
                   className="action-button"
                   onClick={() => {
-                    setShowClientForm(true);
+                    // setShowClientForm(true);
+                    // borrar >>
+                    setShowExtintoresForm(true);
+                    setCreatedContract({})
+                    // << borrar
                     setFormType('modify');
                   }}
                 >

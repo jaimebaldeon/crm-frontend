@@ -1,0 +1,21 @@
+.excel-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .excel-table th, .excel-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .excel-table input {
+    width: 100%;
+    padding: 4px;
+    box-sizing: border-box;
+  }
+  
+  .excel-table th {
+    background-color: #f4f4f4;
+  }
+  
