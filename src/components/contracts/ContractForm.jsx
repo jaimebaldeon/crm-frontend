@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './ContractForm.css'; // Import CSS for ContractForm
+import {validateForm} from './validators/validateContractForm'
+import { submitContractForm } from '../../services/contractService';
 
 const ContractForm = ({ client, onSubmit }) => {
+
+  const [productosServicios, setProductosServicios] = useState([]);
+  const [errors, setErrors] = useState({});
   const [contractData, setContractData] = useState({
     clientId: client, // Initialize with the created client's ID
     products: [
@@ -11,7 +17,23 @@ const ContractForm = ({ client, onSubmit }) => {
         precio: ''
       }
     ], // Initialize with one product/service entry
+    hasExtintores: false,
+    tipo: ''
   });
+
+  // Fetch data from the API
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/api/productosServicios');
+      setProductosServicios(response.data);
+    } catch (error) {
+      console.error('Error fetching productos y servicios data', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // Call the API when the component mounts
+  }, []);
 
   // Handle input change for the contract form fields (not products/services)
   const handleInputChange = (e) => {
@@ -28,9 +50,14 @@ const ContractForm = ({ client, onSubmit }) => {
     const updatedProducts = contractData.products.map((product, i) => (
       i === index ? { ...product, [name]: value } : product
     ));
+    // Check if any of the products contain the substring 'EXTINTOR'
+    const hasExtintor = updatedProducts.some(product =>
+        product.productoServicio && product.productoServicio.toUpperCase().includes('EXTINTOR')
+      );
     setContractData({
       ...contractData,
       products: updatedProducts,
+      hasExtintores: hasExtintor
     });
   };
 
@@ -51,11 +78,21 @@ const ContractForm = ({ client, onSubmit }) => {
     });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(contractData); // Pass contract data to parent component for handling
-  };
+    const validationErrors = validateForm(contractData);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    setErrors({});
+    try {
+        const response = await submitContractForm(contractData);
+        onSubmit(contractData) // Trigger parent callback after successful API submission
+      } catch (error) {
+        alert('Error enviando formulario: ' + error.message);
+      }
+  }; 
 
   return (
     <form className='contract-form' onSubmit={handleSubmit}>
@@ -63,17 +100,41 @@ const ContractForm = ({ client, onSubmit }) => {
 
       {/* General Contract Information */}
       <h3>Products/Services</h3>
+      <div className="product-entry">
+        <label>
+                TIpo Contrato:
+                <select
+                    name="tipo"
+                    value={contractData.tipo}
+                    onChange={handleInputChange}
+                    required
+                    className='custom-select'
+                >
+                    <option value="Anual">Anual</option>
+                    <option value="Trimestral">Trimestral</option>
+                    <option value="Único">Único</option>
+                </select>
+            </label>
+      </div>
       {/* Dynamically add multiple products/services */}
       {contractData.products.map((product, index) => (
         <div key={index} className="product-entry">
           <label>
             Producto/Servicio:
-            <input
-              type="text"
+            <select
               name="productoServicio"
               value={product.productoServicio}
               onChange={(e) => handleProductChange(index, e)}
-            />
+              required
+              className='custom-select'
+            >
+                <option value="">Seleccione un tipo</option>
+                {productosServicios.map((producto, index) => (
+                    <option key={index} value={producto.concepto}>
+                        {producto.concepto}
+                    </option>
+                ))}
+            </select>
           </label>
           <div className="form-row">
             <label className='form-column'>
@@ -83,6 +144,7 @@ const ContractForm = ({ client, onSubmit }) => {
                 name="cantidad"
                 value={product.cantidad}
                 onChange={(e) => handleProductChange(index, e)}
+                required
                 />
             </label>
             <label className='form-column'>
@@ -93,6 +155,7 @@ const ContractForm = ({ client, onSubmit }) => {
                 name="precio"
                 value={product.precio}
                 onChange={(e) => handleProductChange(index, e)}
+                required
                 />
             </label>
         </div>

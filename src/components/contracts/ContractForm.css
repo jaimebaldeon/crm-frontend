@@ -11,6 +11,38 @@
     gap: 10px;
 }
 
+.product-entry .custom-select {
+    appearance: none;
+    padding: 12px;
+    font-size: 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23bdc3c7' d='M2 0L0 2h4z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+    color: #2c3e50;
+    cursor: pointer;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+  
+.product-entry .custom-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    outline: none;
+}
+  
+.product-entry .custom-select:hover {
+    border-color: #3498db;
+}
+  
+.product-entry .custom-select option {
+    color: #2c3e50;
+}
+
 .product-entry .form-row {
     display: flex;
     gap: 10px;

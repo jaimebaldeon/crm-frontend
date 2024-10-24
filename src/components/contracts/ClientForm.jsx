@@ -4,7 +4,7 @@ import axios from 'axios';
 import './ClientForm.css'
 import useForm from '../../hooks/useForm';
 import AddressForm from './AddressForm'; 
-import { validateForm } from './validators/validateForm';
+import { validateForm } from './validators/validateClientForm';
 import { transformData } from '../../utils/transformData';
 import { submitClientForm } from '../../services/clientService';
 

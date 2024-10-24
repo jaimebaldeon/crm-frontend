@@ -13,6 +13,8 @@ const DashboardContent = ({ activeSection }) => {
   const [showClientForm, setShowClientForm] = useState(false);
   const [showContractForm, setShowContractForm] = useState(false);
   const [createdClient, setCreatedClient] = useState(null); // Store created client data
+  const [createdContract, setCreatedContract] = useState(null); // Store created client data
+  const [showExtintoresForm, setShowExtintoresForm] = useState(false);
   const [formType, setFormType] = useState('');
 
   useEffect(() => {
@@ -42,6 +44,14 @@ const DashboardContent = ({ activeSection }) => {
   const handleContractSubmit = (contractData) => {
     console.log('Formulario de contrato enviado:', contractData);
     // Handle the contract submission logic here (e.g., save contract to database)
+    if (contractData.hasExtintores) {
+      console.log('Get extintores data', contractData);
+      // Get EXTINTORES data
+      setCreatedContract(contractData)
+      setShowContractForm(false); // Hide the ContractForm after submission
+      setShowExtintoresForm(true); // Automatically show the ExtintoresForm
+    }
+    
   };
 
   const renderContent = () => {
@@ -69,7 +79,7 @@ const DashboardContent = ({ activeSection }) => {
         return (
           <div className="content-section">
             <h2>Contratos</h2>
-            {!showClientForm && !showContractForm && (
+            {!showClientForm && !showContractForm && !showExtintoresForm && (
               <>
                 <button
                   className="action-button"
@@ -105,6 +115,14 @@ const DashboardContent = ({ activeSection }) => {
               <ContractForm
                 client={createdClient} // Pass the created client to the ContractForm
                 onSubmit={handleContractSubmit}
+              />
+            )}
+
+            {/* Show the ExtintoresForm once a contract is created */}
+            {showExtintoresForm && createdContract && (
+              <ExtintoresForm
+                contract={createdContract} // Pass the created client to the ContractForm
+                onSubmit={handleExtintoresSubmit}
               />
             )}
             
