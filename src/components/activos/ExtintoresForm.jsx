@@ -8,17 +8,17 @@ import { fetchTipoExtintorOptions, fetchMarcaOptions } from '../../services/exti
 const ExtintoresForm = ({ contract, onSubmit }) => {
   // Initial empty state with no rows
   const [extintoresData, setExtintoresData] = useState([]);
-  const [nombreOptions, setNombreOptions] = useState([]);
+  const [tipoExtintorOptions, setTipoExtintorOptions] = useState([]);
   const [marcaOptions, setMarcaOptions] = useState([]);
 
   // Fetch options for 'Tipo Extintor' and 'Marca_Modelo' when the component mounts
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const nombreResponse = await fetchTipoExtintorOptions();
+        const tipoExtintorResponse = await fetchTipoExtintorOptions();
         const marcaResponse = await fetchMarcaOptions();
         
-        setNombreOptions(nombreResponse.data);
+        setTipoExtintorOptions(tipoExtintorResponse.data);
         setMarcaOptions(marcaResponse.data);
       } catch (error) {
         console.error('Error fetching options:', error);
@@ -67,7 +67,7 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
               key={index}
               rowData={row}
               rowIndex={index}
-              nombreOptions={nombreOptions}
+              tipoExtintorOptions={tipoExtintorOptions}
               marcaOptions={marcaOptions}
               onInputChange={handleInputChange}
             />

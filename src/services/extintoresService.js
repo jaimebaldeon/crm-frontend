@@ -7,9 +7,9 @@ const API_BASE_URL = 'http://localhost:5000/api';
 export const fetchTipoExtintorOptions = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/tipoExtintor-options`);
-    return response.data;  // Return the fetched data
+    return response;  // Return the fetched data
   } catch (error) {
-    throw new Error('Failed to fetch Nombre options');
+    throw new Error('Failed to fetch Tipo Extintor options');
   }
 };
 
@@ -17,7 +17,7 @@ export const fetchTipoExtintorOptions = async () => {
 export const fetchMarcaOptions = async () => {
   try {
     const response = await axios.get(`${API_BASE_URL}/marca-options`);
-    return response.data;  // Return the fetched data
+    return response;  // Return the fetched data
   } catch (error) {
     throw new Error('Failed to fetch Marca_Modelo options');
   }

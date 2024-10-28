@@ -1,21 +1,25 @@
 import React from 'react';
 import TableInput from './TableInput';
 
-const TableRow = ({ rowData, rowIndex, nombreOptions, marcaOptions, onInputChange }) => {
+const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = [], onInputChange }) => {
   return (
     <tr>
-      {/* Nombre - Render as a select input */}
+      {/* Tipo Extintor - Render as a select input */}
       <td>
         <select
-          value={rowData.Nombre}
-          onChange={(e) => onInputChange(rowIndex, 'Nombre', e.target.value)}
+          value={rowData.Extintor}
+          onChange={(e) => onInputChange(rowIndex, 'Extintor', e.target.value)}
         >
-          <option value="">Select Nombre</option>
-          {nombreOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
+          <option value="">Select Extintor</option>
+          {tipoExtintorOptions.length > 0 ? (
+            tipoExtintorOptions.map((option, index) => (
+              <option key={index} value={option.concepto}>
+                {option.concepto}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading...</option>
+          )}
         </select>
       </td>
 
@@ -26,17 +30,21 @@ const TableRow = ({ rowData, rowIndex, nombreOptions, marcaOptions, onInputChang
           onChange={(e) => onInputChange(rowIndex, 'Marca_Modelo', e.target.value)}
         >
           <option value="">Select Marca_Modelo</option>
-          {marcaOptions.map((option, index) => (
-            <option key={index} value={option}>
-              {option}
-            </option>
-          ))}
+          {marcaOptions.length > 0 ? (
+            marcaOptions.map((option, index) => (
+              <option key={index} value={option.marca}>
+                {option.marca}
+              </option>
+            ))
+          ) : (
+            <option disabled>Loading...</option>
+          )}
         </select>
       </td>
 
       {/* Other fields - Render as regular text inputs */}
       {Object.keys(rowData).map((field, index) => {
-        if (field !== 'Nombre' && field !== 'Marca_Modelo') {
+        if (field !== 'Extintor' && field !== 'Marca_Modelo') {
           return (
             <td key={index}>
               <TableInput
