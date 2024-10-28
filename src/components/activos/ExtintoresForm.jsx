@@ -1,11 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ExtintoresForm.css'; 
 import TableHeader from './TableHeader';
 import TableRow from './TableRow';
+import { fetchTipoExtintorOptions, fetchMarcaOptions } from '../../services/extintoresService';  // Import API functions
+
 
 const ExtintoresForm = ({ contract, onSubmit }) => {
   // Initial empty state with no rows
   const [extintoresData, setExtintoresData] = useState([]);
+  const [nombreOptions, setNombreOptions] = useState([]);
+  const [marcaOptions, setMarcaOptions] = useState([]);
+
+  // Fetch options for 'Tipo Extintor' and 'Marca_Modelo' when the component mounts
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const nombreResponse = await fetchTipoExtintorOptions();
+        const marcaResponse = await fetchMarcaOptions();
+        
+        setNombreOptions(nombreResponse.data);
+        setMarcaOptions(marcaResponse.data);
+      } catch (error) {
+        console.error('Error fetching options:', error);
+      }
+    };
+
+    fetchOptions();
+  }, []);
 
   // Function to handle input changes in the table
   const handleInputChange = (rowIndex, field, value) => {
@@ -23,7 +44,7 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
     setExtintoresData([
       ...extintoresData,
       {
-        Nombre: '',
+        Extintor: '',
         Marca_Modelo: '',
         N_Identificador: '',
         Fecha_Fabricacion: '',
@@ -38,7 +59,7 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
     <div className="extintores-form">
       <table className="excel-table">
         <thead>
-          <TableHeader columns={['Nombre', 'Marca_Modelo', 'N_Identificador', 'Fecha_Fabricacion', 'Fecha_Retimbrado', 'Ubicacion', 'Notas']} />
+          <TableHeader columns={['Extintor', 'Marca_Modelo', 'N_Identificador', 'Fecha_Fabricacion', 'Fecha_Retimbrado', 'Ubicacion', 'Notas']} />
         </thead>
         <tbody>
           {extintoresData.map((row, index) => (
@@ -46,6 +67,8 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
               key={index}
               rowData={row}
               rowIndex={index}
+              nombreOptions={nombreOptions}
+              marcaOptions={marcaOptions}
               onInputChange={handleInputChange}
             />
           ))}
