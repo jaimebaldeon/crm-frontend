@@ -22,3 +22,14 @@ export const fetchMarcaOptions = async () => {
     throw new Error('Failed to fetch Marca_Modelo options');
   }
 };
+
+// Submit Datos Extintores
+export const submitExtintoresForm = async (extintoresData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores`, extintoresData);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+
+  }
+};

@@ -1,7 +1,7 @@
 import React from 'react';
 import TableInput from './TableInput';
 
-const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = [], onInputChange }) => {
+const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = [], onInputChange, onRemoveRow }) => {
   return (
     <tr>
       {/* Tipo Extintor - Render as a select input */}
@@ -56,6 +56,11 @@ const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = 
         }
         return null;
       })}
+      <td>
+        <button className="delete-row-button" onClick={onRemoveRow}>
+          X
+        </button>
+      </td>
     </tr>
   );
 };

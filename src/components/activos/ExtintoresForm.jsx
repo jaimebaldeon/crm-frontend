@@ -2,14 +2,15 @@ import React, { useState, useEffect } from 'react';
 import './ExtintoresForm.css'; 
 import TableHeader from './TableHeader';
 import TableRow from './TableRow';
-import { fetchTipoExtintorOptions, fetchMarcaOptions } from '../../services/extintoresService';  // Import API functions
-
+import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm } from '../../services/extintoresService';  // Import API functions
+import { validateForm } from './validators/validateExtintoresForm';
 
 const ExtintoresForm = ({ contract, onSubmit }) => {
   // Initial empty state with no rows
   const [extintoresData, setExtintoresData] = useState([]);
   const [tipoExtintorOptions, setTipoExtintorOptions] = useState([]);
   const [marcaOptions, setMarcaOptions] = useState([]);
+  const [errors, setErrors] = useState({});
 
   // Fetch options for 'Tipo Extintor' and 'Marca_Modelo' when the component mounts
   useEffect(() => {
@@ -55,6 +56,31 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
     ]);
   };
 
+   // Function to remove a row based on its index
+   const removeRow = (rowIndex) => {
+    const updatedData = extintoresData.filter((_, index) => index !== rowIndex);
+    setExtintoresData(updatedData);
+  };
+
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const validationErrors = validateForm(extintoresData, contract);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      const errorMessages = Object.values(validationErrors).join('\n');
+      alert(errorMessages)
+      return;
+    }
+    setErrors({});
+    try {
+        const response = await submitExtintoresForm(extintoresData);
+        onSubmit(extintoresData) // Trigger parent callback after successful API submission
+      } catch (error) {
+        alert('Error enviando formulario: ' + error.message);
+      }
+  }; 
+
   return (
     <div className="extintores-form">
       <table className="excel-table">
@@ -70,6 +96,7 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
               tipoExtintorOptions={tipoExtintorOptions}
               marcaOptions={marcaOptions}
               onInputChange={handleInputChange}
+              onRemoveRow={() => removeRow(index)} 
             />
           ))}
         </tbody>
@@ -78,6 +105,11 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
       {/* Button to add a new row */}
       <button className="add-row-button" onClick={addRow}>
         Añadir extintor
+      </button>
+
+      {/* Final submit button */}
+      <button className="submit-button" onClick={handleSubmit}>
+        Actualizar Activos
       </button>
     </div>
   );

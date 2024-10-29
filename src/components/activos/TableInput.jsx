@@ -2,7 +2,7 @@ import React from 'react';
 
 const TableInput = ({ value, onChange }) => {
   return (
-    <input type="text" value={value} onChange={onChange} />
+    <input type="text" value={value} onChange={onChange}/>
   );
 };
 
