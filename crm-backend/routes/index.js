@@ -6,6 +6,7 @@ const productosServiciosRoutes = require('./productosServicios');
 const contratosRoutes = require('./contratos');
 const tipoExtintorRoutes = require('./tipoExtintor');
 const marcaExtintorRoutes = require('./marcaExtintor');
+const extintoresRoutes = require('./extintores');
 
 const router = express.Router();
 
@@ -16,5 +17,6 @@ router.use('/productosServicios', productosServiciosRoutes);
 router.use('/contratos', contratosRoutes);
 router.use('/tipoExtintor-options', tipoExtintorRoutes);
 router.use('/marca-options', marcaExtintorRoutes);
+router.use('/datos-extintores', extintoresRoutes);
 
 module.exports = router;

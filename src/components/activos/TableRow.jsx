@@ -44,7 +44,7 @@ const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = 
 
       {/* Other fields - Render as regular text inputs */}
       {Object.keys(rowData).map((field, index) => {
-        if (field !== 'Extintor' && field !== 'Marca_Modelo') {
+        if (field !== 'Extintor' && field !== 'Marca_Modelo' && field !== 'Id_Cliente') {
           return (
             <td key={index}>
               <TableInput

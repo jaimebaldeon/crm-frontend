@@ -130,7 +130,8 @@ const DashboardContent = ({ activeSection }) => {
             {/* Show the ExtintoresForm once a contract is created */}
             {showExtintoresForm && createdContract && (
               <ExtintoresForm
-                contract={createdContract} // Pass the created client to the ContractForm
+                client={createdClient} // Pass the created client to the ExtintoresForm
+                contract={createdContract} // Pass the created contract to the ExtintoresForm
                 onSubmit={handleExtintoresSubmit}
               />
             )}

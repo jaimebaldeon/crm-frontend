@@ -5,7 +5,7 @@ import TableRow from './TableRow';
 import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm } from '../../services/extintoresService';  // Import API functions
 import { validateForm } from './validators/validateExtintoresForm';
 
-const ExtintoresForm = ({ contract, onSubmit }) => {
+const ExtintoresForm = ({ client, contract, onSubmit }) => {
   // Initial empty state with no rows
   const [extintoresData, setExtintoresData] = useState([]);
   const [tipoExtintorOptions, setTipoExtintorOptions] = useState([]);
@@ -45,6 +45,7 @@ const ExtintoresForm = ({ contract, onSubmit }) => {
     setExtintoresData([
       ...extintoresData,
       {
+        Id_Cliente: client, // Initialize with the created client's ID
         Extintor: '',
         Marca_Modelo: '',
         N_Identificador: '',
