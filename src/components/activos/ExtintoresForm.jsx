@@ -5,7 +5,7 @@ import TableRow from './TableRow';
 import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm } from '../../services/extintoresService';  // Import API functions
 import { validateForm } from './validators/validateExtintoresForm';
 
-const ExtintoresForm = ({ client, contract, onSubmit }) => {
+const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
   // Initial empty state with no rows
   const [extintoresData, setExtintoresData] = useState([]);
   const [tipoExtintorOptions, setTipoExtintorOptions] = useState([]);
@@ -112,6 +112,10 @@ const ExtintoresForm = ({ client, contract, onSubmit }) => {
       <button className="submit-button" onClick={handleSubmit}>
         Actualizar Activos
       </button>
+
+      {/* Cancel button*/}
+      <button type="button" onClick={onCancel} className="cancel-button">Cancelar</button>
+
     </div>
   );
 };

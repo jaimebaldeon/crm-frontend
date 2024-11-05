@@ -5,7 +5,7 @@ exports.saveExtintores = async (extintoresData) => {
     INSERT INTO activos 
       (id_cliente, nombre, cantidad, marca_modelo, tipo, n_identificador, fecha_fabricacion, fecha_retimbrado, estado, ubicacion, notas)
     VALUES 
-      ($1, $2, 1, $3, 'EXTINTOR', $4, $5, $6, 'ACTIVO', $7, $8)
+      ($1, $2, 1, $3, $4, $5, $6, $7, 'ACTIVO', $8, $9)
     RETURNING id_activo;
   `;
 
@@ -28,11 +28,23 @@ exports.saveExtintores = async (extintoresData) => {
         Ubicacion,
         Notas
       } = item;
+      
+      // Query to get the 'tipo' from 'ref_tipo_extintor' based on 'Extintor' value
+      const tipoQuery = `SELECT tipo FROM ref_tipo_extintor WHERE extintor = $1`;
+      const tipoResult = await pool.query(tipoQuery, [Extintor]);
+
+      // If no matching 'tipo' is found, throw an error
+      if (tipoResult.rows.length === 0) {
+        throw new Error(`No matching 'tipo' found for extintor: ${Extintor}`);
+      }
+
+      const tipo = tipoResult.rows[0].tipo;
 
       const values = [
         Id_Cliente,
         Extintor,
         Marca_Modelo,
+        tipo,
         N_Identificador,
         Fecha_Fabricacion || null,
         Fecha_Retimbrado || null,

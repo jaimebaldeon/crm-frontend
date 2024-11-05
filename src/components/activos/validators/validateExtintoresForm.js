@@ -1,23 +1,23 @@
-export const validateForm = (formData, contractoData) => {
+export const validateForm = (formData, contractData) => {
         /*BORRAR*/
-        const contractData =
-          {
-            clientId: 4760,
-            products: [
-              {
-                productoServicio: "EXTINTOR POLVO 6 KG",
-                cantidad: "1",
-                precio: "0.01",
-              },
-              {
-                productoServicio: "EXTINTOR POLVO 2 KG",
-                cantidad: "1",
-                precio: "0.02",
-              },
-            ],
-            hasExtintores: true,
-            tipo: "",
-          }
+        // const contractData =
+        //   {
+        //     clientId: 4760,
+        //     products: [
+        //       {
+        //         productoServicio: "EXTINTOR POLVO 6 KG",
+        //         cantidad: "1",
+        //         precio: "0.01",
+        //       },
+        //       {
+        //         productoServicio: "EXTINTOR POLVO 2 KG",
+        //         cantidad: "1",
+        //         precio: "0.02",
+        //       },
+        //     ],
+        //     hasExtintores: true,
+        //     tipo: "",
+        //   }
 
 
         let errors = {};

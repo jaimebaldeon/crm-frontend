@@ -138,8 +138,8 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-  }
+}
   
-  .change-address-btn:hover {
+.change-address-btn:hover {
     background-color: #4c514a;
-  }
+}

@@ -4,7 +4,7 @@ import './ContractForm.css';
 import {validateForm} from './validators/validateContractForm'
 import { submitContractForm } from '../../services/contractService';
 
-const ContractForm = ({ client, onSubmit }) => {
+const ContractForm = ({ client, onSubmit, onCancel }) => {
 
   const [productosServicios, setProductosServicios] = useState([]);
   const [errors, setErrors] = useState({});
@@ -180,6 +180,9 @@ const ContractForm = ({ client, onSubmit }) => {
 
       {/* Submit form button */}
       <button type="submit" className="submit-button">Submit Contract</button>
+
+      {/* Cancel button*/}
+      <button type="button" onClick={onCancel} className="cancel-button">Cancelar</button>
     </form>
   );
 };

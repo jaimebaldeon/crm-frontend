@@ -34,6 +34,7 @@ const DashboardContent = ({ activeSection }) => {
     console.log('Formulario enviado:', clientData);
     if (formType === 'create') {
       console.log('Creando nuevo cliente:', clientData);
+      alert('Cliente guardado correctamente');
       setCreatedClient(clientData.clientId); // Store the newly created client data
       setShowClientForm(false); // Hide the ClientForm after submission
       setShowContractForm(true); // Automatically show the ContractForm
@@ -42,9 +43,17 @@ const DashboardContent = ({ activeSection }) => {
     }
   };
 
+  const handleClientCancel = () => {
+    const confirmCancel = window.confirm("¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.");
+    if (confirmCancel) {
+      setShowClientForm(false); // Hide the ClientForm if user confirms cancellation
+    }
+  };
+  
   const handleContractSubmit = (contractData) => {
-    console.log('Formulario de contrato enviado:', contractData);
-    // Handle the contract submission logic here (e.g., save contract to database)
+    console.log('Formulario de contrato enviado:', contractData)
+    alert('Contrato guardado correctamente');
+    // Handle the contract submission logic here
     if (contractData.hasExtintores) {
       console.log('Get extintores data', contractData);
       // Get EXTINTORES data
@@ -54,9 +63,24 @@ const DashboardContent = ({ activeSection }) => {
     }
   };
 
+  const handleContractCancel = () => {
+    const confirmCancel = window.confirm("¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.");
+    if (confirmCancel) {
+      setShowContractForm(false); // Hide the ContractForm if user confirms cancellation
+    }
+  };
+
   const handleExtintoresSubmit = (extintoresData) => {
     console.log('Formulario de extintores enviado:', extintoresData);
-    // Handle the contract submission logic here (e.g., save contract to database)
+    alert('Formulario de extintores guardado correctamente');
+    setShowExtintoresForm(false)
+  };
+
+  const handleExtintoresCancel = () => {
+    const confirmCancel = window.confirm("¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.");
+    if (confirmCancel) {
+      setShowExtintoresForm(false); // Hide the ContractForm if user confirms cancellation
+    }
   };
 
   const renderContent = () => {
@@ -98,11 +122,7 @@ const DashboardContent = ({ activeSection }) => {
                 <button
                   className="action-button"
                   onClick={() => {
-                    // setShowClientForm(true);
-                    // borrar >>
-                    setShowExtintoresForm(true);
-                    setCreatedContract({})
-                    // << borrar
+                    // setShowClientForm(true);                    
                     setFormType('modify');
                   }}
                 >
@@ -115,6 +135,7 @@ const DashboardContent = ({ activeSection }) => {
             {showClientForm && (
               <ClientForm
                 onSubmit={handleClientSubmit}
+                onCancel={handleClientCancel}
                 formType={formType}
               />
             )}
@@ -124,6 +145,7 @@ const DashboardContent = ({ activeSection }) => {
               <ContractForm
                 client={createdClient} // Pass the created client to the ContractForm
                 onSubmit={handleContractSubmit}
+                onCancel={handleContractCancel}
               />
             )}
 
@@ -133,6 +155,7 @@ const DashboardContent = ({ activeSection }) => {
                 client={createdClient} // Pass the created client to the ExtintoresForm
                 contract={createdContract} // Pass the created contract to the ExtintoresForm
                 onSubmit={handleExtintoresSubmit}
+                onCancel={handleExtintoresCancel}
               />
             )}
             

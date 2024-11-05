@@ -10,7 +10,7 @@ import { submitClientForm } from '../../services/clientService';
 
 
 
-const ClientForm = ({ onSubmit }) => {
+const ClientForm = ({ onSubmit, onCancel }) => {
 
   const [tiposEstablecimiento, setTiposEstablecimiento] = useState([]);
 
@@ -122,6 +122,7 @@ const ClientForm = ({ onSubmit }) => {
         <textarea name="notasAdicionales" value={formData.notasAdicionales} onChange={handleInputChange}></textarea>
       </div>
       <button type="submit" className="submit-button">Siguiente</button>
+      <button type="button" onClick={onCancel} className="cancel-button">Cancelar</button>
     </form>
   );
 };

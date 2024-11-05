@@ -102,3 +102,18 @@
 .contract-form .submit-button:hover {
     background-color: #16a085;
 }
+
+.cancel-button {
+    margin-top: 15px;
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .cancel-button:hover {
+    background-color: #c0392b;
+  }
