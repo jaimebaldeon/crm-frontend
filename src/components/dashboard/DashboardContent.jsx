@@ -161,6 +161,37 @@ const DashboardContent = ({ activeSection }) => {
             
           </div>
         );
+      case 'Trabajos':
+        return (
+          <div className="content-section">
+            <h2>Trabajos</h2>
+              <div className='trabajos'>
+                <input
+                  type="text"
+                  placeholder="Ingrese el mes"
+                  className="input-field"
+                  value={inputMes} 
+                  onChange={handleInputChange} 
+                />
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    getAlbaranesMes(inputMes);
+                  }}
+                >
+                  Generar Albaranes
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowTrabajoSearch(true);
+                  }}
+                >
+                  Verificar Trabajo
+                </button>
+              </div>
+          </div>
+        );
       default:
         return <div>Select a section from the menu</div>;
     }
