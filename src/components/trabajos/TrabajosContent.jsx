@@ -1,15 +1,34 @@
 import React, { useState } from 'react';
-
+import { generateAlbaranes } from '../../services/albaranesService';  // Import API functions
 
 const TrabajosContent = () => {
     const [inputMes, setInputMes] = useState('')
+    const [message, setMessage] = useState('');
     const [showTrabajoSearch, setShowTrabajoSearch] = useState(false);
 
     const handleInputChange = (e) => setInputMes(e.target.value);
 
-    const getAlbaranesMes = (mes) => {
-        // Logic to generate albaranes for the specified month
-        console.log(`Generating albaranes for month: ${mes}`);
+    const validateMonth = (month) => {
+        const validMonths = [
+          'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+          'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
+        ];
+        return validMonths.includes(month.toLowerCase());
+    };
+
+    const getAlbaranesMes = async (month) => {
+        if (!validateMonth(month)) {
+          setMessage('Mes no válido. Introduzca un mes en español (e.g., enero, febrero).');
+          return;
+        }
+    
+        try {
+          const generateAlbaranesResponse = await generateAlbaranes(month);
+          setMessage(generateAlbaranesResponse.data.message || 'Albaranes generados correctamente.');
+        } catch (error) {
+          setMessage('Error al generar los albaranes. Inténtalo de nuevo.');
+          console.error(error);
+        }
     };
 
     return (
@@ -31,6 +50,7 @@ const TrabajosContent = () => {
             >
               Generar Albaranes
             </button>
+            {message && <p className="message">{message}</p>}
             <button
               className="action-button"
               onClick={() => {
