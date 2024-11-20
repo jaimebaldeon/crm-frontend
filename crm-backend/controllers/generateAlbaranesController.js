@@ -23,7 +23,7 @@ exports.generateAlbaranes = async (req, res) => {
         const activosCliente = await getClientAssets(client)
 
         // BORRAR: Detector Excepciones
-        if (client.nombre.includes('IGLESIA CRISTIANA ABRIENDO')) {
+        if (client.nombre.includes('MIGUEL BECERRO')) {
           activosCliente;
         }
 

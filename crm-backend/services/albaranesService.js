@@ -221,11 +221,31 @@ async function generateAlbaranDocument(contract, client, activosCliente, product
       }
 
       // Set template variables
+      let client_name = client.nombre; // Default placeholder for client name
+      let client_name_small = ''
+      let client_address = client.direccion; // Default placeholder for client name
+      let client_address_small = ''
+
+      // Adjust placeholder key if the name length exceeds 40 characters
+      if (client.nombre.length >= 40) {
+        client_name = ''; // Use smaller font placeholder
+        client_name_small = client.nombre
+      }
+
+      // Adjust placeholder key if the name length exceeds 40 characters
+      if (client.direccion.length >= 40) {
+        client_address = ''; // Use smaller font placeholder
+        client_address_small = client.direccion
+      }
+
+      // Set template variables
       doc.setData({
         num_albaran: albaranNumber,
         date: `${day} de ${month} de ${year}`,
-        client_name: client.nombre,
-        client_address: client.direccion,
+        client_name: client_name,
+        client_name_small: client_name_small,
+        client_address: client_address,
+        client_address_small: client_address_small,
         client_city: client.ciudad,
         client_province: client.provincia,
         client_schedule: client.horario || '',
