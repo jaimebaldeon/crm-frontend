@@ -63,22 +63,24 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
           // Check extintor lifecycle (caducado, retimbrado, nuevo)
           const fabricationYear = parseInt(row_activo.fecha_fabricacion, 10);
           const caducado = fabricationYear && (currentYear - fabricationYear) >= 20;
-          const retimbrado = !row_activo.fecha_retimbrado || (currentYear - parseInt(row_activo.fecha_retimbrado, 10)) >= 5;
+          const retimbrado = row_activo.fecha_retimbrado === null 
+            ? false 
+            : (currentYear - parseInt(row_activo.fecha_retimbrado, 10)) >= 5;
           const nuevo = fabricationYear === currentYear;
   
           if (caducado || nuevo) {
             // Add new extintor to products and services
             const desc = await fetchProductDescription(row_activo.nombre, 'PRODUCTOS');
-            productosServicios.push(desc);
+            productosServicios.push(desc.descripcion_corta);
           } else {
             // Add maintenance service
             const maintenanceDesc = await fetchServiceDescription(row_activo.nombre, 'MANTENIMIENTO');
-            productosServicios.push(maintenanceDesc);
+            productosServicios.push(maintenanceDesc.descripcion_corta);
   
             // Add retimbrado service if necessary
             if (retimbrado) {
               const retimbradoDesc = await fetchServiceDescription(row_activo.nombre, 'RETIMBRADO');
-              productosServicios.push(retimbradoDesc);
+              productosServicios.push(retimbradoDesc.descripcion_corta);
             }
           }
   
@@ -86,12 +88,12 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
           // Handle "BOCAS DE INCENDIO EQUIPADAS" assets
   
           const maintenanceDesc = await fetchServiceDescription(row_activo.nombre, 'MANTENIMIENTO');
-          productosServicios.push(...Array(row_activo.cantidad).fill(maintenanceDesc));
+          productosServicios.push(...Array(row_activo.cantidad).fill(maintenanceDesc.descripcion_corta));
   
         } else {
           // General case for other assets
           const maintenanceDesc = await fetchServiceDescription(row_activo.nombre, 'MANTENIMIENTO');
-          productosServicios.push(...Array(row_activo.cantidad).fill(maintenanceDesc));
+          productosServicios.push(...Array(row_activo.cantidad).fill(maintenanceDesc.descripcion_corta));
         }
   
       } catch (error) {
@@ -113,16 +115,27 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
   
   // Helper function to fetch product description from a reference table
 async function fetchProductDescription(productName, conceptType) {
-    // Simulate fetching from REF_PRODUCTOS table
-    // Replace this with actual database logic
-    return `Descripción para ${productName} (${conceptType})`;
+    // Fetching from REF_PRODUCTOS table
+    const query = `
+      SELECT descripcion_corta 
+      FROM ref_productos 
+      WHERE concepto = $1
+    `;
+    const result = await pool.query(query, [productName]);
+    return result.rows[0] || null;
 }
   
 // Helper function to fetch service description from a reference table
 async function fetchServiceDescription(productName, conceptType) {
-    // Simulate fetching from REF_SERVICIOS table
-    // Replace this with actual database logic
-    return `Servicio de ${conceptType} para ${productName}`;
+    // Fetching from REF_SERVICIOS table
+    const query = `
+      SELECT descripcion_corta 
+      FROM ref_servicios 
+      WHERE producto_asociado LIKE '%' || $1 || '%'
+        AND concepto LIKE '%' || $2 || '%'
+    `;
+    const result = await pool.query(query, [productName, conceptType]);
+    return result.rows[0] || null;
 }
   
 
@@ -173,7 +186,7 @@ async function generateAlbaranDocument(contract, client, activosCliente, product
         // Add only maintenance data
         for (const item of maintenanceData) {
             combinedTableData.push({
-              cant: item.cantidad,
+              cant: item.cant,
               concepto: item.concepto,
               num: '', // No placa for maintenance
               ano_fab: '',

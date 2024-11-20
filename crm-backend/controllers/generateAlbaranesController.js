@@ -22,6 +22,11 @@ exports.generateAlbaranes = async (req, res) => {
         const client = await getClientByContract(contract)
         const activosCliente = await getClientAssets(client)
 
+        // BORRAR: Detector Excepciones
+        if (client.nombre.includes('IGLESIA CRISTIANA ABRIENDO')) {
+          activosCliente;
+        }
+
         if (activosCliente.length === 0) {
             // Add client name to notification list if no assets are found
             clientsWithoutAssets.push(client.name); // Assuming client.name holds the client’s name
