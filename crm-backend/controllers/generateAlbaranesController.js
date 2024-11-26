@@ -1,61 +1,100 @@
-const { getContractsByMonth, getClientByContract, getClientAssets, generateAlbaranDocument, deriveMaintenance } = require('../services/albaranesService');
+const { getContractsByMonth, getAlbaranesAceptadosByMonth, deleteAlbaranesPendientesByMonth, getClientByContract, getClientAssets, generateAlbaranDocument, deriveMaintenance, insertAlbaranes, getContractPrices } = require('../services/albaranesService');
 
 
 exports.generateAlbaranes = async (req, res) => {
     const month = req.query.month;
+    const year = new Date().getFullYear()
   
     try {
       // Fetch contracts for the specified month from the database
-      const contracts = await getContractsByMonth(month);
+      const contracts = await getContractsByMonth(month, year);
+
+      // Fetch contracts for the specified month from the database
+      const albaranesAceptados = await getAlbaranesAceptadosByMonth(month, year);
   
-      // Filter contracts based on specific criteria (CON ALBARANES NO ACEPTADOS)
-    //   const filteredContracts = contracts.filter(contract => {
-    //     // Example filter condition: contracts with a start date within the specified month
-    //     return contract.mes === month;
-    //   });
-      filteredContracts = contracts
+      // Filter contracts: not in albaranesAceptados
+      const filteredContracts = contracts.filter(contract => 
+        !albaranesAceptados.some(albaran => albaran.id_contrato === contract.id_contrato)
+      );
     
-      const clientsWithoutAssets = [];
+      const clientesSinActivos = [];
+      const clientesSinDatos = [];
+      const clientesIncorrectos = [];
+      const generatedAlbaranes = [];
+
       
       // Generate and save albaran documents for each filtered contract
       for (const contract of filteredContracts) {
-        const client = await getClientByContract(contract)
-        const activosCliente = await getClientAssets(client)
+          const client = await getClientByContract(contract)
+          const activosCliente = await getClientAssets(client)
 
-        // BORRAR: Detector Excepciones
-        if (client.nombre.includes('MIGUEL BECERRO')) {
-          activosCliente;
-        }
+          // BORRAR: Detector Excepciones
+          if (client.nombre.includes('MIGUEL BECERRO')) {
+            activosCliente;
+          }
 
-        if (activosCliente.length === 0) {
-            // Add client name to notification list if no assets are found
-            clientsWithoutAssets.push(client.name); // Assuming client.name holds the client’s name
-            console.log(`Skipping albaran generation for ${client.name} due to lack of assets.`);
-            continue; // Skip to the next contract in the loop
-        }
-        
-        // Derive products and services from client assets
-        const { productosServiciosCounter, saltarAlbaran } = await deriveMaintenance(activosCliente, [], [])
+          if (activosCliente.length === 0) {
+              // Add client name to notification list if no assets are found
+              clientesSinActivos.push(client.name); // Assuming client.name holds the client’s name
+              console.log(`Saltando albaran de ${client.name} por falta de activos.`);
+              continue; // Skip to the next contract in the loop
+          }
+          
+          // Derive products and services from client assets
+          const { productosServiciosCounter, saltarAlbaran, clienteSinDatos, clienteIncorrecto } = await deriveMaintenance(activosCliente)
 
-        if (saltarAlbaran) {
-            console.log(`Skipping albaran for ${client.name} due to missing or incorrect data.`);
-            continue;
-        }
-        
-        // Generate albaran for clients with assets
-        await generateAlbaranDocument(contract, client, activosCliente, productosServiciosCounter);
+          // Detect any error wit client data before generating
+          if (saltarAlbaran) {
+              if (clienteSinDatos) {clientesSinDatos.push(client.name);}
+              if (clienteIncorrecto) {clientesIncorrectos.push(client.name);}
+              continue;
+          }
+          
+          // Generate albaran for clients with assets
+          const albaranNumber = await generateAlbaranDocument(contract, client, activosCliente, productosServiciosCounter);
+
+          // Collect albaran data for database insertion
+          generatedAlbaranes.push({
+              idAlbaran: albaranNumber,
+              idContrato: contract.id_contrato,
+              idCliente: client.id_cliente,
+              productosServicios: Object.keys(productosServiciosCounter),
+              cantidades: Object.values(productosServiciosCounter),
+              precios: getContractPrices(contract.precios, Object.keys(productosServiciosCounter)), 
+              cuota: null,
+              mes: month,
+              anio: year,
+              estado: 'PENDIENTE',
+              fecha: new Date(),
+              notas_adicionales: null,
+          });
       }
 
-      // Notify which clients have no assets after the loop
-      if (clientsWithoutAssets.length > 0) {
-            console.log('Albaran generation completed. The following clients have no assets:');
-            clientsWithoutAssets.forEach(clientName => console.log(`- ${clientName}`));
+      // Insert all generated albaranes into the database
+      if (generatedAlbaranes.length > 0) {
+          const deletionResult = await deleteAlbaranesPendientesByMonth(month, year);
+          const insertionResult = await insertAlbaranes(generatedAlbaranes);
+          console.log(`Inserted ${insertionResult.inserted} albaranes into the database.`);
+      }
+
+      // Notify about skipped clients
+      if (clientesSinActivos.length > 0) {
+          console.log('Generacion de albaranes completada. Los siguientes clientes no tienen activos:');
+          clientesSinActivos.forEach(clientName => console.log(`- ${clientName}`));
       } 
+      if (clientesSinDatos.length > 0) {
+          console.log('Generacion de albaranes completada. Los siguientes clientes tienes activos incompletos:');
+          clientesSinDatos.forEach(clientName => console.log(`- ${clientName}`));
+      }
+      if (clientesIncorrectos.length > 0) {
+          console.log('Generacion de albaranes completada. Los siguientes clientes tienen datos incorrectos:');
+          clientesIncorrectos.forEach(clientName => console.log(`- ${clientName}`));
+      }  
   
-      res.status(200).json({ message: `Albaranes for ${month} generated successfully.` });
+      res.status(200).json({ message: `Albaranes de ${month} generados correctamente.` });
     } catch (error) {
-      console.error('Error generating albaranes:', error);
-      res.status(500).json({ message: 'Failed to generate albaranes.' });
+      console.error('Error generando albaranes:', error);
+      res.status(500).json({ message: 'Error al generar albaranes.' });
     }
   };
   

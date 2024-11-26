@@ -4,13 +4,27 @@ const fs = require('fs-extra');
 const path = require('path');
 const PizZip = require('pizzip');
 const Docxtemplater = require('docxtemplater');
-const { getUltimoIdAlbaran, getDate } = require('../utils/documentHelpers');
+const { getDate } = require('../utils/documentHelpers');
 
 
 // Fetch contracts for a specific month from the database
-async function getContractsByMonth(month) {
-  const query = `SELECT * FROM contratos WHERE UPPER(mes) = UPPER($1)`;
-  const result = await pool.query(query, [month]);
+async function getContractsByMonth(month, year) {
+  const query = `SELECT * FROM contratos WHERE UPPER(mes) = UPPER($1) AND año=($2) AND UPPER(estado) = 'ACTIVO'`;
+  const result = await pool.query(query, [month, year]);
+  return result.rows;
+}
+
+// Fetch alabaranes aceptados for a specific month from the database
+async function getAlbaranesAceptadosByMonth(month, year) {
+  const query = `SELECT * FROM data_trabajos WHERE UPPER(mes) = UPPER($1) AND año=($2) AND UPPER(estado) = 'ACEPTADO'`;
+  const result = await pool.query(query, [month, year]);
+  return result.rows;
+}
+
+// Delete albaranes pendientes for a specific month from the database
+async function deleteAlbaranesPendientesByMonth(month, year) {
+  const query = `DELETE FROM data_trabajos WHERE UPPER(mes) = UPPER($1) AND año=($2) AND UPPER(estado) = 'PENDIENTE' RETURNING *`;
+  const result = await pool.query(query, [month, year]);
   return result.rows;
 }
 
@@ -39,10 +53,27 @@ async function getClientAssets(client) {
     }
 }
 
+// Get the last value of id_albaran from the data_trabajos table
+async function getUltimoIdAlbaran() {
+  try {
+    const query = `SELECT MAX(id_albaran) AS ultimo_id FROM data_trabajos;`;
+    const result = await pool.query(query);
+
+    // If the table is empty, result.rows[0].ultimo_id will be null
+    return result.rows[0].ultimo_id || null;
+  } catch (error) {
+    console.error('Error retrieving the last id_albaran:', error);
+    throw new Error('Failed to retrieve the last id_albaran');
+  }
+}
+
 // Derive Maintenance Services and Products for a given client
-async function deriveMaintenance(activosCliente, clientes_sin_datos = [], clientes_incorrectos = []) {
+async function deriveMaintenance(activosCliente) {
     const productosServicios = []; // List of derived products and services
     let saltarAlbaran = false; // Flag to skip albaran if there's missing data
+    let clienteSinDatos = false; // Flag to detect client with missing asset's data
+    let clienteIncorrecto = false; // Flag to detect client with any other error
+
     
     // Current year for maintenance calculations
     const currentYear = new Date().getFullYear();
@@ -55,7 +86,7 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
           // Validate extintor data
           if (!Number.isInteger(row_activo.fecha_fabricacion)) {
             console.log(`FALTAN DATOS EXTINTORES: ${row_activo.nombre}`);
-            clientes_sin_datos.push(row_activo);
+            clienteSinDatos = true;
             saltarAlbaran = true;
             break;
           }
@@ -98,7 +129,7 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
   
       } catch (error) {
         console.error('ERROR PRODUCTOS CLIENTE:', error);
-        clientes_incorrectos.push(row_activo);
+        clienteIncorrecto = true;
         saltarAlbaran = true;
         break;
       }
@@ -110,10 +141,10 @@ async function deriveMaintenance(activosCliente, clientes_sin_datos = [], client
         return counter;
     }, {});
   
-    return { productosServiciosCounter, saltarAlbaran };
+    return { productosServiciosCounter, saltarAlbaran, clienteSinDatos, clienteIncorrecto };
 }
   
-  // Helper function to fetch product description from a reference table
+// Helper function to fetch product description from a reference table
 async function fetchProductDescription(productName, conceptType) {
     // Fetching from REF_PRODUCTOS table
     const query = `
@@ -266,22 +297,84 @@ async function generateAlbaranDocument(contract, client, activosCliente, product
       // Define the output path
       const outputDirectory = path.join(__dirname, '../albaranes');
       await fs.ensureDir(outputDirectory);
-      const outputPath = path.join(outputDirectory, `albaran_${albaranNumber}.docx`);
+      const outputPath = path.join(outputDirectory, `albaran_${client.nombre}_${client.id_cliente}.docx`);
   
       // Write the generated document to file
       await fs.writeFile(outputPath, output);
   
       console.log(`Albarán generated and saved at: ${outputPath}`);
+
+      return albaranNumber;
+
     } catch (error) {
       console.error('Error generating albaran document:', error);
       throw new Error('Failed to generate albaran document');
     }
 }
 
+// Get contract prices
+function getContractPrices (prices, products) {
+  // Parse precios if it's a string representation of a list
+  if (typeof prices === "string") {
+    prices = JSON.parse(prices);
+  }
+
+  newPrices = []
+  products.forEach((product => {
+      // Check if the word 'mantenimiento' is not in the product
+      if (!product.toLowerCase().includes('mantenimiento') || prices === "") {
+          // If not 'mantenimiento' or no price is provided, add the price 20
+          newPrices.push(20);
+      } else {
+          // If it is 'mantenimiento', use the next price from the precios list
+          newPrices.push(prices.length > 0 ? prices[0] : null);
+          prices = prices.slice(1); // Remove the used price from the list
+      }
+  }));
+  
+  return newPrices;
+}
+
+// Inserts generated albaranes into the database.
+async function insertAlbaranes (albaranes) {
+  const query = `
+    INSERT INTO data_trabajos
+      (id_contrato, id_cliente, productos_servicios, cantidades, precios, cuota, mes, año, estado, nota, notas_adicionales, fecha)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    RETURNING id_albaran;
+  `;
+
+  const results = [];
+  for (const albaran of albaranes) {
+    const values = [
+      albaran.idContrato,
+      albaran.idCliente,
+      albaran.productosServicios, 
+      albaran.cantidades, 
+      albaran.precios, 
+      albaran.cuota,
+      albaran.mes,
+      albaran.anio,
+      albaran.estado || 'PENDIENTE', 
+      albaran.nota || null, 
+      albaran.notas_adicionales || null,
+      albaran.fecha,
+    ];
+    const result = await pool.query(query, values);
+    results.push(result.rows[0]);
+  }
+
+  return { inserted: results.length, albaranes: results };
+};
+
 module.exports = {
   getContractsByMonth,
+  getAlbaranesAceptadosByMonth,
+  deleteAlbaranesPendientesByMonth,
   getClientByContract,
   getClientAssets,
   deriveMaintenance,
   generateAlbaranDocument,
+  getContractPrices,
+  insertAlbaranes
 };
