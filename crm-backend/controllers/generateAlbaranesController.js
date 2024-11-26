@@ -77,21 +77,36 @@ exports.generateAlbaranes = async (req, res) => {
           console.log(`Inserted ${insertionResult.inserted} albaranes into the database.`);
       }
 
+      // Initialize the message variable
+      let message = `Albaranes de ${month} generados correctamente.\n`;
+
       // Notify about skipped clients
       if (clientesSinActivos.length > 0) {
           console.log('Generacion de albaranes completada. Los siguientes clientes no tienen activos:');
           clientesSinActivos.forEach(clientName => console.log(`- ${clientName}`));
+          message += 'Generación de albaranes completada. Los siguientes clientes no tienen activos:\n';
+          clientesSinActivos.forEach(clientName => {
+              message += `- ${clientName}\n`;
+          });
       } 
       if (clientesSinDatos.length > 0) {
           console.log('Generacion de albaranes completada. Los siguientes clientes tienes activos incompletos:');
           clientesSinDatos.forEach(clientName => console.log(`- ${clientName}`));
+          message += 'Generación de albaranes completada. Los siguientes clientes tienen activos incompletos:\n';
+          clientesSinDatos.forEach(clientName => {
+              message += `- ${clientName}\n`;
+          });
       }
       if (clientesIncorrectos.length > 0) {
           console.log('Generacion de albaranes completada. Los siguientes clientes tienen datos incorrectos:');
           clientesIncorrectos.forEach(clientName => console.log(`- ${clientName}`));
+          message += 'Generación de albaranes completada. Los siguientes clientes tienen datos incorrectos:\n';
+          clientesIncorrectos.forEach(clientName => {
+              message += `- ${clientName}\n`;
+          });
       }  
   
-      res.status(200).json({ message: `Albaranes de ${month} generados correctamente.` });
+      res.status(200).json({ message: message });
     } catch (error) {
       console.error('Error generando albaranes:', error);
       res.status(500).json({ message: 'Error al generar albaranes.' });

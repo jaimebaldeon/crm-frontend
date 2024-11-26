@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateAlbaranes } from '../../services/albaranesService';  // Import API functions
+import { generateAlbaranes } from '../../services/albaranesService';  
 
 const TrabajosContent = () => {
     const [inputMes, setInputMes] = useState('')
@@ -24,7 +24,7 @@ const TrabajosContent = () => {
     
         try {
           const generateAlbaranesResponse = await generateAlbaranes(month);
-          setMessage(generateAlbaranesResponse.data.message || 'Albaranes generados correctamente.');
+          setMessage(generateAlbaranesResponse.message || 'Albaranes generados correctamente.');
         } catch (error) {
           setMessage('Error al generar los albaranes. Inténtalo de nuevo.');
           console.error(error);
