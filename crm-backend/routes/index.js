@@ -7,7 +7,9 @@ const contratosRoutes = require('./contratos');
 const tipoExtintorRoutes = require('./tipoExtintor');
 const marcaExtintorRoutes = require('./marcaExtintor');
 const extintoresRoutes = require('./extintores');
-const albaranesRoutes = require('./generateAlbaranes');
+const generateAlbaranesRoutes = require('./generateAlbaranes');
+const getAlbaranesRoutes = require('./getAlbaranes');
+const searchClientesRoutes = require('./searchClientes')
 
 
 const router = express.Router();
@@ -20,7 +22,9 @@ router.use('/contratos', contratosRoutes);
 router.use('/tipoExtintor-options', tipoExtintorRoutes);
 router.use('/marca-options', marcaExtintorRoutes);
 router.use('/datos-extintores', extintoresRoutes);
-router.use('/generate-albaranes', albaranesRoutes);
+router.use('/generate-albaranes', generateAlbaranesRoutes);
+router.use('/get-albaranes', getAlbaranesRoutes);
+router.use('/search-clientes', searchClientesRoutes);
 
 
 module.exports = router;

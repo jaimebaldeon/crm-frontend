@@ -14,6 +14,13 @@ async function getContractsByMonth(month, year) {
   return result.rows;
 }
 
+// Fetch alabaranes for a specific search from the database
+async function getAlbaranesByClientId(clientId) {
+  const query = `SELECT * FROM data_trabajos WHERE id_cliente = $1`;
+  const result = await pool.query(query, [clientId]);
+  return result.rows;
+}
+
 // Fetch alabaranes aceptados for a specific month from the database
 async function getAlbaranesAceptadosByMonth(month, year) {
   const query = `SELECT * FROM data_trabajos WHERE UPPER(mes) = UPPER($1) AND año=($2) AND UPPER(estado) = 'ACEPTADO'`;
@@ -376,5 +383,6 @@ module.exports = {
   deriveMaintenance,
   generateAlbaranDocument,
   getContractPrices,
-  insertAlbaranes
+  insertAlbaranes,
+  getAlbaranesByClientId
 };

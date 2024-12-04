@@ -1,0 +1,31 @@
+.albaran-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 16px; /* Slightly larger font for readability */
+    text-align: left; /* Align text to the left */
+  }
+  
+  .albaran-table th, 
+  .albaran-table td {
+    padding: 12px 15px; /* Add padding to cells for more space */
+    border: 1px solid #ddd; /* Light border for cell separation */
+  }
+  
+  .albaran-table thead {
+    background-color: #f4f4f4; /* Light gray background for table header */
+  }
+  
+  .albaran-table tbody tr {
+    transition: background-color 0.2s ease; /* Smooth transition for hover effect */
+  }
+  
+  .albaran-table tbody tr:hover {
+    background-color: #e9f5ff; /* Light blue background on hover */
+  }
+  
+  .albaran-table tbody tr.selected-row {
+    background-color: #d0ebff; /* More noticeable blue background for selected row */
+    font-weight: bold; /* Make the selected row stand out */
+  }
+  

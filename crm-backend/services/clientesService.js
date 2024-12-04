@@ -51,3 +51,40 @@ exports.saveClient = async (clientData) => {
   }
 
 };
+
+exports.searchClientes = async (searchData) => {
+  const { nombreCliente, direccion, cif, idCliente } = searchData;
+
+  // Initialize query and values
+  let query = `SELECT * FROM clientes WHERE 1=1`; // Use `1=1` to simplify conditional appending
+  const values = [];
+
+  // Dynamically add conditions based on provided search criteria
+  if (nombreCliente) {
+    query += ` AND UPPER(nombre) ILIKE $${values.length + 1}`; // Case-insensitive match
+    values.push(`%${nombreCliente}%`);
+  }
+
+  if (direccion) {
+    query += ` AND UPPER(direccion) ILIKE $${values.length + 1}`; // Case-insensitive match
+    values.push(`%${direccion}%`);
+  }
+
+  if (cif) {
+    query += ` AND UPPER(cif) ILIKE $${values.length + 1}`; // Case-insensitive match
+    values.push(`%${cif}%`);
+  }
+
+  if (idCliente) {
+    query += ` AND id_cliente = $${values.length + 1}`; // Exact match for numeric ID
+    values.push(idCliente);
+  }
+
+  try {
+    const result = await pool.query(query, values);
+    return result.rows; // Return the matching rows
+  } catch (error) {
+    console.error('Error searching for client:', error);
+    throw error; // Rethrow error for further handling
+  }
+};

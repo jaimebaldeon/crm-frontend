@@ -45,6 +45,8 @@ const useForm = ({ initialValues, validate, onSubmit }) => {
     const validationErrors = validate(formData);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      const errorMessages = Object.values(validationErrors).join('\n');
+      alert(errorMessages)
       return;
     }
     setErrors({});
