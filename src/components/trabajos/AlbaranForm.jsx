@@ -2,19 +2,26 @@ import React, { useState } from 'react';
 import './AlbaranForm.css'; // Add CSS for styling if needed
 
 const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
-  // Initialize state with the passed albaran object
   const [editableAlbaran, setEditableAlbaran] = useState({ ...albaran });
 
-  // Handle input changes for cantidades, productos_servicios, and precios
+  // Lista estática de productos/servicios
+  const productoServicioOptions = [
+    "A",
+    "B",
+    "C",
+    "D",
+  ];
+
+  // Manejar cambios en los campos de las filas
   const handleInputChange = (index, field, value) => {
     setEditableAlbaran((prevState) => {
       const updatedField = [...prevState[field]];
-      updatedField[index] = value; // Update the specific index
+      updatedField[index] = value; // Actualiza el valor en el índice correspondiente
       return { ...prevState, [field]: updatedField };
     });
   };
 
-  // Handle row deletion
+  // Manejar eliminación de filas
   const handleDeleteRow = (index) => {
     setEditableAlbaran((prevState) => ({
       ...prevState,
@@ -24,20 +31,20 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
     }));
   };
 
-  // Handle adding a new row
+  // Manejar adición de nuevas filas
   const handleAddRow = () => {
     setEditableAlbaran((prevState) => ({
       ...prevState,
-      productos_servicios: [...prevState.productos_servicios, ''],
-      cantidades: [...prevState.cantidades, ''],
-      precios: [...prevState.precios, ''],
+      productos_servicios: [...prevState.productos_servicios, ""], // Valor inicial vacío
+      cantidades: [...prevState.cantidades, ""],
+      precios: [...prevState.precios, ""],
     }));
   };
 
-  // Handle form submission
+  // Manejar envío del formulario
   const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent default form submission
-    onSubmit(editableAlbaran); // Pass the modified albaran to the parent
+    e.preventDefault(); // Evitar comportamiento predeterminado
+    onSubmit(editableAlbaran); // Pasar el albarán modificado al componente padre
   };
 
   return (
@@ -57,20 +64,32 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
             {editableAlbaran.productos_servicios.map((producto, index) => (
               <tr key={index}>
                 <td>
-                  <input
-                    type="text"
-                    value={editableAlbaran.productos_servicios[index]}
-                    onChange={(e) =>
-                      handleInputChange(index, 'productos_servicios', e.target.value)
-                    }
-                  />
+                  {producto !== "" ? (
+                    <span>{producto}</span> // Mostrar como texto si es una fila existente
+                  ) : (
+                    <select
+                      value={editableAlbaran.productos_servicios[index]}
+                      onChange={(e) =>
+                        handleInputChange(index, "productos_servicios", e.target.value)
+                      }
+                    >
+                      <option value="" disabled>
+                        Seleccione un producto/servicio
+                      </option>
+                      {productoServicioOptions.map((option, i) => (
+                        <option key={i} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </td>
                 <td>
                   <input
                     type="number"
                     value={editableAlbaran.cantidades[index]}
                     onChange={(e) =>
-                      handleInputChange(index, 'cantidades', e.target.value)
+                      handleInputChange(index, "cantidades", e.target.value)
                     }
                   />
                 </td>
@@ -80,7 +99,7 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
                     step="0.01"
                     value={editableAlbaran.precios[index]}
                     onChange={(e) =>
-                      handleInputChange(index, 'precios', e.target.value)
+                      handleInputChange(index, "precios", e.target.value)
                     }
                   />
                 </td>
