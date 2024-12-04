@@ -1,0 +1,67 @@
+.albaran-form {
+    padding: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .albaran-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .albaran-table th,
+  .albaran-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .albaran-table th {
+    background-color: #f2f2f2;
+  }
+  
+  .albaran-table input {
+    width: 100%;
+    padding: 5px;
+    box-sizing: border-box;
+  }
+  
+  .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .submit-button,
+  .cancel-button,
+  .add-button,
+  .delete-button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 3px;
+  }
+  
+  .cancel-button {
+    background-color: #f44336;
+  }
+  
+  .delete-button {
+    background-color: #ff5722;
+  }
+  
+  .add-button {
+    background-color: #2196f3;
+  }
+  
+  .submit-button:hover,
+  .cancel-button:hover,
+  .add-button:hover,
+  .delete-button:hover {
+    opacity: 0.9;
+  }
+  

@@ -3,6 +3,7 @@ import { generateAlbaranes, getAlbaranes } from '../../services/albaranesService
 import SearchClientForm from './SearchClientForm';
 import ClientResultList from './ClientResultList';
 import AlbaranesResultList from './AlbaranesResultList';
+import AlbaranForm from './AlbaranForm';
 
 
 const TrabajosContent = () => {
@@ -13,7 +14,8 @@ const TrabajosContent = () => {
     const [showClientList, setShowClientList] = useState(false);
     const [albaranesList, setAlbaranesList] = useState([]);
     const [showAlbaranesList, setShowAlbaranesList] = useState(false);
-
+    const [albaranVerificable, setAlbaranVerificable] = useState([]);
+    const [showAlbaranForm, setShowAlbaranForm] = useState(false);
 
     const handleInputChange = (e) => setInputMes(e.target.value);
 
@@ -73,6 +75,13 @@ const TrabajosContent = () => {
       }
     };
 
+    const handleAlbaranVerfication = (selectedAlbaran) => {
+      console.log('Albaran seleccionado:', selectedAlbaran);
+      setAlbaranVerificable(selectedAlbaran);
+      setShowAlbaranesList(false);
+      setShowAlbaranForm(true);
+    };
+
 
     return (
         <div className="content-section">
@@ -108,7 +117,7 @@ const TrabajosContent = () => {
             )}
 
             {/* Show Client Search Form */}
-            {showTrabajoSearch && !showClientList && !showAlbaranesList && (
+            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && (
               <SearchClientForm
                 onSubmit={handleClientSearch}
                 onCancel={handleClientCancel}
@@ -127,17 +136,28 @@ const TrabajosContent = () => {
               />
             )}
 
-            {/* Show Client Search Result List as a selection list */}
+            {/* Show Albaran Search Result List as a selection list */}
             {showAlbaranesList && albaranesList.length > 0 && (
               <AlbaranesResultList
                 albaranesList={albaranesList}
-                onSubmit={(selectedAlbaran) => {
-                  console.log('Albaran seleccionado:', selectedAlbaran);
-                  // Perform additional actions with the selected albaran, e.g., navigate to another view
-                  setShowAlbaranesList(false);
-                }}
+                onSubmit={handleAlbaranVerfication}
                 onCancel={() => {
                   setShowAlbaranesList(false);
+                  setMessage("");
+                }}
+              />
+            )}
+
+            {/* Show Albaran Form */}
+            {showAlbaranForm && (
+              <AlbaranForm
+                albaran={albaranVerificable}
+                onSubmit={ (verifiedAlbaran) => {
+                  console.log('Albaran verificado:', verifiedAlbaran);
+                  setShowAlbaranForm(false);
+                }}
+                onCancel={() => {
+                  setShowAlbaranForm(false);
                   setMessage("");
                 }}
               />
