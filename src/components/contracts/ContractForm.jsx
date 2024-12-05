@@ -24,7 +24,7 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
   // Fetch data from the API
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/productosServicios');
+      const response = await axios.get('http://localhost:5000/api/productos-mantenibles');
       setProductosServicios(response.data);
     } catch (error) {
       console.error('Error fetching productos y servicios data', error);

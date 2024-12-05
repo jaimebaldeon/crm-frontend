@@ -1,16 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AlbaranForm.css'; // Add CSS for styling if needed
+import { getProductosServiciosNoMantenibles } from '../../services/productosServiciosService';
 
 const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
   const [editableAlbaran, setEditableAlbaran] = useState({ ...albaran });
+  const [productosServicios, setProductosServicios] = useState([]);
 
-  // Lista estática de productos/servicios
-  const productoServicioOptions = [
-    "A",
-    "B",
-    "C",
-    "D",
-  ];
+  const fetchProductosServiciosNoMantenibles = async () => {
+    try {
+        const productosServiciosResponse = await getProductosServiciosNoMantenibles(); // Call the API when the component mounts
+        setProductosServicios(productosServiciosResponse);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+  useEffect(() => {
+    fetchProductosServiciosNoMantenibles();
+  }, []);
 
   // Manejar cambios en los campos de las filas
   const handleInputChange = (index, field, value) => {
@@ -44,6 +51,9 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
   // Manejar envío del formulario
   const handleSubmit = (e) => {
     e.preventDefault(); // Evitar comportamiento predeterminado
+    // check_nuevos_extintores
+    // check_retimbrados_extintores
+    // update_albaranesBBDD
     onSubmit(editableAlbaran); // Pasar el albarán modificado al componente padre
   };
 
@@ -72,13 +82,14 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
                       onChange={(e) =>
                         handleInputChange(index, "productos_servicios", e.target.value)
                       }
+                      required
                     >
                       <option value="" disabled>
                         Seleccione un producto/servicio
                       </option>
-                      {productoServicioOptions.map((option, i) => (
-                        <option key={i} value={option}>
-                          {option}
+                      {productosServicios.map((option, i) => (
+                        <option key={i} value={option.concepto}>
+                          {option.concepto}
                         </option>
                       ))}
                     </select>
@@ -91,6 +102,7 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
                     onChange={(e) =>
                       handleInputChange(index, "cantidades", e.target.value)
                     }
+                    required
                   />
                 </td>
                 <td>
@@ -101,6 +113,7 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
                     onChange={(e) =>
                       handleInputChange(index, "precios", e.target.value)
                     }
+                    required
                   />
                 </td>
                 <td>

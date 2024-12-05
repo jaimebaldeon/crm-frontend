@@ -64,4 +64,9 @@
   .delete-button:hover {
     opacity: 0.9;
   }
+
+  .albaran-table td span {
+    font-weight: bold;
+    color: #333;
+  }
   
