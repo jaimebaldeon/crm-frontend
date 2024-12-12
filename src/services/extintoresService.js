@@ -24,12 +24,32 @@ export const fetchMarcaOptions = async () => {
 };
 
 // Submit Datos Extintores
-export const submitExtintoresForm = async (extintoresData) => {
+export const submitExtintoresForm = async (extintoresData, contratoId) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/datos-extintores`, extintoresData);
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores`, {extintoresData, contratoId});
     return response.data;
   } catch (error) {
     throw error.response.data;
 
+  }
+};
+
+// Get Extintores Caducados del cliente
+export const getExtintoresCaducados = async (clientId, contratoId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/datos-extintores/caducados`, {params: { clientId,  contratoId},});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
+// Update Extintores Caducados del cliente
+export const updateExtintoresCaducados = async (clientId, contratoId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores/update-caducados`, { clientId,  contratoId });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
   }
 };

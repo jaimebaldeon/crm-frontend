@@ -21,3 +21,12 @@ export const getProductosServiciosNoMantenibles = async () => {
   
     }
 };
+
+export const getConceptoByDescCorta = async (descripcionesCortas) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/productos/concepto-by-descripcion-corta`, {params: { descripcionesCortas },});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

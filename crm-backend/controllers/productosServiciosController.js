@@ -21,3 +21,14 @@ exports.getProductosServiciosNoMantenibles = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+exports.getConceptoByDescCorta = async (req, res) => {
+  try {
+    const descripcionesCortas = req.query.descripcionesCortas
+    const data = await productosServiciosService.getConceptoByDescCorta(descripcionesCortas);
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching conceptos de descripciones cortas:', err);
+    res.status(500).send('Server Error');
+  }
+};

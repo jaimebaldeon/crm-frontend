@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './AlbaranForm.css'; // Add CSS for styling if needed
 import { getProductosServiciosNoMantenibles } from '../../services/productosServiciosService';
+import { existenNuevosExtintores, validateExtintoresCaducados } from './validators/ValidateAlbaranForm';
+
 
 const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
   const [editableAlbaran, setEditableAlbaran] = useState({ ...albaran });
@@ -49,12 +51,23 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
   };
 
   // Manejar envío del formulario
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Evitar comportamiento predeterminado
-    // check_nuevos_extintores
+    if (existenNuevosExtintores(editableAlbaran)) {
+      // Validar extintores en BBDD
+      const validated = await validateExtintoresCaducados(editableAlbaran)
+
+      // Interrumpir Envio si no es validado
+      if (!validated) {
+        return
+      };
+      
+      onSubmit(editableAlbaran, true); // Pass `true` to indicate nuevos extintores exist
+    } else {
+      onSubmit(editableAlbaran, false); // Pass `false` otherwise
+    }
     // check_retimbrados_extintores
     // update_albaranesBBDD
-    onSubmit(editableAlbaran); // Pasar el albarán modificado al componente padre
   };
 
   return (

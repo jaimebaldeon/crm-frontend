@@ -4,6 +4,7 @@ import SearchClientForm from './SearchClientForm';
 import ClientResultList from './ClientResultList';
 import AlbaranesResultList from './AlbaranesResultList';
 import AlbaranForm from './AlbaranForm';
+import ExtintoresForm from '../activos/ExtintoresForm';
 
 
 const TrabajosContent = () => {
@@ -16,6 +17,8 @@ const TrabajosContent = () => {
     const [showAlbaranesList, setShowAlbaranesList] = useState(false);
     const [albaranVerificable, setAlbaranVerificable] = useState([]);
     const [showAlbaranForm, setShowAlbaranForm] = useState(false);
+    const [showExtintoresForm, setShowExtintoresForm] = useState(false);
+    const [editableAlbaran, setEditableAlbaran] = useState(null);
 
     const handleInputChange = (e) => setInputMes(e.target.value);
 
@@ -82,6 +85,16 @@ const TrabajosContent = () => {
       setShowAlbaranForm(true);
     };
 
+    const handleAlbaranSubmit = (verifiedAlbaran, hasNuevosExtintores) => {
+      console.log('Albarán modificado:', verifiedAlbaran);
+      setShowAlbaranForm(false); // Hide AlbaranForm
+    
+      if (hasNuevosExtintores) {
+        setEditableAlbaran(verifiedAlbaran); // Pass the albarán data to ExtintoresForm
+        setShowExtintoresForm(true); // Show ExtintoresForm
+      }
+    };
+    
 
     return (
         <div className="content-section">
@@ -117,7 +130,7 @@ const TrabajosContent = () => {
             )}
 
             {/* Show Client Search Form */}
-            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && (
+            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && !showExtintoresForm && (
               <SearchClientForm
                 onSubmit={handleClientSearch}
                 onCancel={handleClientCancel}
@@ -152,16 +165,32 @@ const TrabajosContent = () => {
             {showAlbaranForm && (
               <AlbaranForm
                 albaran={albaranVerificable}
-                onSubmit={ (verifiedAlbaran) => {
-                  console.log('Albaran verificado:', verifiedAlbaran);
-                  setShowAlbaranForm(false);
-                }}
+                onSubmit={ handleAlbaranSubmit}
                 onCancel={() => {
                   setShowAlbaranForm(false);
                   setMessage("");
                 }}
               />
             )}
+
+            {/* Show Extintores Form */}
+            {showExtintoresForm && (
+              <ExtintoresForm
+                client={editableAlbaran.id_cliente}
+                contract={editableAlbaran}
+                onSubmit={(extintoresData) => {
+                  console.log('Datos de extintores:', extintoresData);
+                  // !!
+                  // ACTUALIZAR BBDD ALBARAN
+                  // !!
+                  setShowExtintoresForm(false); // Hide ExtintoresForm after submission
+                }}
+                onCancel={() => {
+                  setShowExtintoresForm(false); // Hide ExtintoresForm on cancel
+                }}
+              />
+            )}
+
           </div>          
         </div>
     );

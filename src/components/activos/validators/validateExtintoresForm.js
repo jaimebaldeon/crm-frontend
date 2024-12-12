@@ -1,4 +1,8 @@
-export const validateForm = (formData, contractData) => {
+import { getExtintoresCaducados } from '../../../services/extintoresService'; 
+import { getConceptoByDescCorta } from '../../../services/productosServiciosService';  
+
+
+export const validateForm = async (formData, contractData) => {
         /*BORRAR*/
         // const contractData =
         //   {
@@ -58,7 +62,13 @@ export const validateForm = (formData, contractData) => {
         });
 
         // Chequear que los datos introducidos corresponden con el contrato
-        const contractErrors = validateContractWithFormData(contractData, formData)
+        let contractErrors;
+
+        if (!'id_albaran' in contractData) {
+          contractErrors = validateContractWithFormData(contractData, formData)
+        } else {
+          contractErrors = await validateAlbaranWithFormData(contractData, formData)
+        }
         
         errors = { ...errors, ...contractErrors };
         
@@ -90,5 +100,55 @@ export const validateContractWithFormData = (contractData, formData) => {
       
         return errors;
       };
+
+const albaran2ProductsDict = async (rawAlbaranData) => {
+  // Filter the productos_servicios array to include only items containing "Nuevo extintor"
+  const listaNuevos = rawAlbaranData.productos_servicios.filter((c) => c.includes("Nuevo extintor"));
+
+  // Convert descripcion_corta into concepto
+  const listaNuevosConceptos = await getConceptoByDescCorta(listaNuevos)
+
+  // Map the filtered items to their corresponding quantities
+  const listaNuevosCantidades = listaNuevos.map(
+    (concepto) => rawAlbaranData.cantidades[rawAlbaranData.productos_servicios.indexOf(concepto)]
+  );
+
+  // Filter productos_servicios to include only items containing "Nuevo extintor"
+  const products = listaNuevosConceptos
+    .map((productoServicio, index) => ({
+      productoServicio: productoServicio.concepto,
+      cantidad: listaNuevosCantidades[index],
+    }));
+
+  return { products };
+};
+
       
       
+// Chequear que los datos introducidos corresponden con el albaran
+export const validateAlbaranWithFormData = async (rawAlbaranData, formData) => {
+  let errors = {};
+
+  // Create a map of product quantities from formData
+  const formDataMap = formData.reduce((acc, item) => {
+    const { Extintor } = item;
+    acc[Extintor] = (acc[Extintor] || 0) + 1; // Count occurrences of each product
+    return acc;
+  }, {});
+
+  // Crear el diccionario de Conceptos y Cantidades
+  const albaranData = await albaran2ProductsDict(rawAlbaranData);
+
+  // Check each product in albaranData against the formDataMap
+  albaranData.products.forEach((product, index) => {
+    const { productoServicio, cantidad } = product;
+    const expectedQuantity = parseInt(cantidad, 10); // Quantity in albaranData
+    const actualQuantity = formDataMap[productoServicio] || 0; // Quantity in formData
+
+    if (actualQuantity !== expectedQuantity) {
+      errors[`product_${index}`] = `La cantidad de ${productoServicio} no coincide. Esperado: ${expectedQuantity}, Encontrado: ${actualQuantity}`;
+    }
+  });
+
+  return errors;
+};

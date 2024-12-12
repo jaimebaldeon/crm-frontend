@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './ExtintoresForm.css'; 
 import TableHeader from './TableHeader';
 import TableRow from './TableRow';
-import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm } from '../../services/extintoresService';  // Import API functions
+import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm, updateExtintoresCaducados } from '../../services/extintoresService';  // Import API functions
 import { validateForm } from './validators/validateExtintoresForm';
 
 const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
@@ -66,7 +66,7 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateForm(extintoresData, contract);
+    const validationErrors = await validateForm(extintoresData, contract);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       const errorMessages = Object.values(validationErrors).join('\n');
@@ -75,7 +75,13 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
     }
     setErrors({});
     try {
-        const response = await submitExtintoresForm(extintoresData);
+        if ('id_albaran' in contract) {
+          const response = await updateExtintoresCaducados(contract.id_cliente, contract.id_contrato);
+          // !!
+          // UPDATE EXTINTORES RETIMBRADOS !!
+          // !!
+        }
+        const response = await submitExtintoresForm(extintoresData, contract.id_contrato);
         onSubmit(extintoresData) // Trigger parent callback after successful API submission
       } catch (error) {
         alert('Error enviando formulario: ' + error.message);

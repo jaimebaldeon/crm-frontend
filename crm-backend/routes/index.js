@@ -11,7 +11,7 @@ const generateAlbaranesRoutes = require('./generateAlbaranes');
 const getAlbaranesRoutes = require('./getAlbaranes');
 const searchClientesRoutes = require('./searchClientes')
 const productosServiciosNoManteniblesRoutes = require('./productosServiciosNoMantenibles');
-
+const productosRoutes = require('./productos');
 
 const router = express.Router();
 
@@ -27,5 +27,7 @@ router.use('/generate-albaranes', generateAlbaranesRoutes);
 router.use('/get-albaranes', getAlbaranesRoutes);
 router.use('/search-clientes', searchClientesRoutes);
 router.use('/productos-servicios-no-mantenibles', productosServiciosNoManteniblesRoutes);
+router.use('/productos', productosRoutes);
+
 
 module.exports = router;
