@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateAlbaranes, getAlbaranes } from '../../services/albaranesService';  
+import { generateAlbaranes, getAlbaranes, updateAlbaran } from '../../services/albaranesService';  
 import SearchClientForm from './SearchClientForm';
 import ClientResultList from './ClientResultList';
 import AlbaranesResultList from './AlbaranesResultList';
@@ -85,7 +85,7 @@ const TrabajosContent = () => {
       setShowAlbaranForm(true);
     };
 
-    const handleAlbaranSubmit = (verifiedAlbaran, hasNuevosExtintores) => {
+    const handleAlbaranSubmit = async (verifiedAlbaran, hasNuevosExtintores) => {
       console.log('Albarán modificado:', verifiedAlbaran);
       setShowAlbaranForm(false); // Hide AlbaranForm
     
@@ -93,8 +93,19 @@ const TrabajosContent = () => {
         setEditableAlbaran(verifiedAlbaran); // Pass the albarán data to ExtintoresForm
         setShowExtintoresForm(true); // Show ExtintoresForm
       }
+      else {
+        const responseAlbaranUpdate = await updateAlbaran(verifiedAlbaran);
+      }
     };
-    
+
+    const handleAlbaranUpdate = async (extintoresData) => {
+      console.log('Datos de extintores:', extintoresData);
+      // !!
+      // ACTUALIZAR BBDD ALBARAN
+      const responseAlbaranUpdate = await updateAlbaran(editableAlbaran);
+      // !!
+      setShowExtintoresForm(false); // Hide ExtintoresForm after submission
+    };
 
     return (
         <div className="content-section">
@@ -178,13 +189,7 @@ const TrabajosContent = () => {
               <ExtintoresForm
                 client={editableAlbaran.id_cliente}
                 contract={editableAlbaran}
-                onSubmit={(extintoresData) => {
-                  console.log('Datos de extintores:', extintoresData);
-                  // !!
-                  // ACTUALIZAR BBDD ALBARAN
-                  // !!
-                  setShowExtintoresForm(false); // Hide ExtintoresForm after submission
-                }}
+                onSubmit={ handleAlbaranUpdate }
                 onCancel={() => {
                   setShowExtintoresForm(false); // Hide ExtintoresForm on cancel
                 }}

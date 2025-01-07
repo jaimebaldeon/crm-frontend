@@ -1,4 +1,4 @@
-import { getExtintoresCaducados } from '../../../services/extintoresService'; 
+import { updateExtintoresRetimbrados } from '../../../services/extintoresService'; 
 import { getConceptoByDescCorta } from '../../../services/productosServiciosService';  
 
 
@@ -152,3 +152,18 @@ export const validateAlbaranWithFormData = async (rawAlbaranData, formData) => {
 
   return errors;
 };
+
+// Update extintores retimbrados si existen
+export const checkExtintoresRetimbrados = async (rawAlbaranData) => {
+  const existenRt = rawAlbaranData.productos_servicios.some((c) => 
+    c.includes('Retimbrado quinquenal extintor')
+  );
+
+  if (existenRt) {
+    const response = await updateExtintoresRetimbrados(rawAlbaranData.id_cliente, rawAlbaranData.id_contrato);
+    return { response };
+  } else {
+    return { result: [] }; // Corrected return value to an object with a key
+  }
+};
+

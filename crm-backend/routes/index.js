@@ -9,6 +9,7 @@ const marcaExtintorRoutes = require('./marcaExtintor');
 const extintoresRoutes = require('./extintores');
 const generateAlbaranesRoutes = require('./generateAlbaranes');
 const getAlbaranesRoutes = require('./getAlbaranes');
+const updateAlbaranRoutes = require('./updateAlbaran');
 const searchClientesRoutes = require('./searchClientes')
 const productosServiciosNoManteniblesRoutes = require('./productosServiciosNoMantenibles');
 const productosRoutes = require('./productos');
@@ -25,6 +26,7 @@ router.use('/marca-options', marcaExtintorRoutes);
 router.use('/datos-extintores', extintoresRoutes);
 router.use('/generate-albaranes', generateAlbaranesRoutes);
 router.use('/get-albaranes', getAlbaranesRoutes);
+router.use('/update-albaran', updateAlbaranRoutes);
 router.use('/search-clientes', searchClientesRoutes);
 router.use('/productos-servicios-no-mantenibles', productosServiciosNoManteniblesRoutes);
 router.use('/productos', productosRoutes);

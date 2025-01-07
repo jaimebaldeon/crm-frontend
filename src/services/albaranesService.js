@@ -8,7 +8,6 @@ export const generateAlbaranes = async (month) => {
       return response.data;
     } catch (error) {
       throw error.response.data;
-  
     }
 };
 
@@ -18,6 +17,14 @@ export const getAlbaranes = async (clientId) => {
     return response.data;
   } catch (error) {
     throw error.response.data;
+  }
+};
 
+export const updateAlbaran = async (albaranData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/update-albaran`, { albaranData });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
   }
 };

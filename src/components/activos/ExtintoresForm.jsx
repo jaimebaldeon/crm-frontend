@@ -3,7 +3,7 @@ import './ExtintoresForm.css';
 import TableHeader from './TableHeader';
 import TableRow from './TableRow';
 import { fetchTipoExtintorOptions, fetchMarcaOptions, submitExtintoresForm, updateExtintoresCaducados } from '../../services/extintoresService';  // Import API functions
-import { validateForm } from './validators/validateExtintoresForm';
+import { validateForm, checkExtintoresRetimbrados } from './validators/validateExtintoresForm';
 
 const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
   // Initial empty state with no rows
@@ -76,11 +76,11 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel }) => {
     setErrors({});
     try {
         if ('id_albaran' in contract) {
-          const response = await updateExtintoresCaducados(contract.id_cliente, contract.id_contrato);
-          // !!
-          // UPDATE EXTINTORES RETIMBRADOS !!
-          // !!
+          const responseCaducados = await updateExtintoresCaducados(contract.id_cliente, contract.id_contrato);
+          // Update Extitnores Retimbrados
+          const responseRetimbrados = await checkExtintoresRetimbrados(contract);
         }
+        // Actualiza nuevos activos en BBDD
         const response = await submitExtintoresForm(extintoresData, contract.id_contrato);
         onSubmit(extintoresData) // Trigger parent callback after successful API submission
       } catch (error) {

@@ -93,3 +93,31 @@ exports.updateExtintoresCaducados = async (extintoresData) => {
     throw error; // Rethrow para manejar errores a nivel superior
   }
 };
+
+exports.updateExtintoresRetimbrados = async (extintoresData) => {
+  const query = `
+    UPDATE activos
+    SET fecha_retimbrado = EXTRACT(YEAR FROM CURRENT_DATE)
+    WHERE 
+		  id_contrato = $1 
+      AND (
+            (
+                    fecha_retimbrado <= EXTRACT(YEAR FROM CURRENT_DATE) - 5
+                AND fecha_fabricacion < EXTRACT(YEAR FROM CURRENT_DATE) - 20
+            )
+            OR (
+                fecha_fabricacion <= EXTRACT(YEAR FROM CURRENT_DATE) - 5
+            )
+      )
+      AND estado = 'ACTIVO'
+    RETURNING *; -- Opcional: Devuelve las filas actualizadas
+  `;
+
+  try {
+    const result = await pool.query(query, [extintoresData.contratoId]);
+    return result.rows; // Devuelve las filas actualizadas, si es necesario
+  } catch (error) {
+    console.error('Error actualizando extintores retimbrados:', error);
+    throw error; // Rethrow para manejar errores a nivel superior
+  }
+};

@@ -53,3 +53,13 @@ export const updateExtintoresCaducados = async (clientId, contratoId) => {
     throw error.response.data;
   }
 };
+
+// Update Extintores Caducados del cliente
+export const updateExtintoresRetimbrados = async (clientId, contratoId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores/update-retimbrados`, { clientId,  contratoId });
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};

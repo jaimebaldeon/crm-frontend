@@ -175,7 +175,6 @@ async function fetchServiceDescription(productName, conceptType) {
     const result = await pool.query(query, [productName, conceptType]);
     return result.rows[0] || null;
 }
-  
 
 
 // Generate an albaran document and save it to a directory
@@ -374,6 +373,44 @@ async function insertAlbaranes (albaranes) {
   return { inserted: results.length, albaranes: results };
 };
 
+// Update albaran data
+async function updateAlbaran (albaran) {
+  const query = `
+    UPDATE data_trabajos
+    SET
+      productos_servicios = $1,
+      cantidades = $2,
+      precios = $3,
+      cuota = $4,
+      estado = $5
+    WHERE id_albaran = $6
+    RETURNING *; -- Devuelve las filas actualizadas
+  `;
+
+  const calcularTotalCuota = (cantidades, precios) => {
+    const cantidadArray = cantidades.map(Number); // Ensure all quantities are numbers
+    const precioArray = precios.map(Number); // Ensure all prices are numbers
+    return cantidadArray.reduce((total, cantidad, i) => total + cantidad * precioArray[i], 0);
+  };
+
+  const values = [
+    albaran.productos_servicios, 
+    albaran.cantidades, 
+    albaran.precios, 
+    calcularTotalCuota(albaran.cantidades, albaran.precios),
+    'ACEPTADO', 
+    albaran.id_albaran,
+  ];
+
+  try {
+    const result = await pool.query(query, values);
+    return result.rows; // Devuelve las filas actualizadas, si es necesario
+  } catch (error) {
+    console.error('Error actualizando albaran:', error);
+    throw error; // Rethrow para manejar errores a nivel superior
+  }
+};
+
 module.exports = {
   getContractsByMonth,
   getAlbaranesAceptadosByMonth,
@@ -384,5 +421,6 @@ module.exports = {
   generateAlbaranDocument,
   getContractPrices,
   insertAlbaranes,
-  getAlbaranesByClientId
+  getAlbaranesByClientId,
+  updateAlbaran
 };
