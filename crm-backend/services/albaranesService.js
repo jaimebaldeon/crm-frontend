@@ -8,16 +8,16 @@ const { getDate } = require('../utils/documentHelpers');
 
 
 // Fetch contracts for a specific month from the database
-async function getContractsByMonth(month, year) {
-  const query = `SELECT * FROM contratos WHERE UPPER(mes) = UPPER($1) AND año=($2) AND UPPER(estado) = 'ACTIVO'`;
-  const result = await pool.query(query, [month, year]);
+async function getContractsByMonth(month) {
+  const query = `SELECT * FROM contratos WHERE UPPER(mes) = UPPER($1) AND UPPER(estado) = 'ACTIVO'`;
+  const result = await pool.query(query, [month]);
   return result.rows;
 }
 
 // Fetch alabaranes for a specific search from the database
-async function getAlbaranesByClientId(clientId) {
-  const query = `SELECT * FROM data_trabajos WHERE id_cliente = $1`;
-  const result = await pool.query(query, [clientId]);
+async function getAlbaranesByClientId(clientId, estado) {
+  const query = `SELECT * FROM data_trabajos WHERE id_cliente = $1 AND UPPER(estado) = $2`;
+  const result = await pool.query(query, [clientId, estado]);
   return result.rows;
 }
 
@@ -346,7 +346,7 @@ async function insertAlbaranes (albaranes) {
   const query = `
     INSERT INTO data_trabajos
       (id_contrato, id_cliente, productos_servicios, cantidades, precios, cuota, mes, año, estado, nota, notas_adicionales, fecha)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    VALUES ($1, $2, $3, $4, $5, $6, UPPER($7), $8, $9, $10, $11, $12)
     RETURNING id_albaran;
   `;
 

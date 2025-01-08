@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './AlbaranForm.css'; // Add CSS for styling if needed
 import { getProductosServiciosNoMantenibles } from '../../services/productosServiciosService';
 import { existenNuevosExtintores, validateExtintoresCaducados } from './validators/ValidateAlbaranForm';
+import { checkExtintoresRetimbrados } from '../activos/validators/validateExtintoresForm';
 
 
 const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
@@ -61,9 +62,11 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
       if (!validated) {
         return
       };
-      
+
       onSubmit(editableAlbaran, true); // Pass `true` to indicate nuevos extintores exist
     } else {
+      // Actualizar Extintores Retimbrados si Existen
+      const responseRetimbrados = await checkExtintoresRetimbrados(editableAlbaran);
       onSubmit(editableAlbaran, false); // Pass `false` otherwise
     }
     // check_retimbrados_extintores
@@ -101,7 +104,7 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
                         Seleccione un producto/servicio
                       </option>
                       {productosServicios.map((option, i) => (
-                        <option key={i} value={option.concepto}>
+                        <option key={i} value={option.descripcion_corta}>
                           {option.concepto}
                         </option>
                       ))}

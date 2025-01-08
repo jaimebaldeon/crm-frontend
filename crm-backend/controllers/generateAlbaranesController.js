@@ -7,7 +7,7 @@ exports.generateAlbaranes = async (req, res) => {
   
     try {
       // Fetch contracts for the specified month from the database
-      const contracts = await getContractsByMonth(month, year);
+      const contracts = await getContractsByMonth(month);
 
       // Fetch contracts for the specified month from the database
       const albaranesAceptados = await getAlbaranesAceptadosByMonth(month, year);
@@ -29,9 +29,9 @@ exports.generateAlbaranes = async (req, res) => {
           const activosCliente = await getClientAssets(client)
 
           // BORRAR: Detector Excepciones
-          if (client.nombre.includes('MIGUEL BECERRO')) {
-            activosCliente;
-          }
+        //   if (client.nombre.includes('MIGUEL BECERRO')) {
+        //     activosCliente;
+        //   }
 
           if (activosCliente.length === 0) {
               // Add client name to notification list if no assets are found
@@ -43,7 +43,7 @@ exports.generateAlbaranes = async (req, res) => {
           // Derive products and services from client assets
           const { productosServiciosCounter, saltarAlbaran, clienteSinDatos, clienteIncorrecto } = await deriveMaintenance(activosCliente)
 
-          // Detect any error wit client data before generating
+          // Detect any error with client data before generating
           if (saltarAlbaran) {
               if (clienteSinDatos) {clientesSinDatos.push(client.name);}
               if (clienteIncorrecto) {clientesIncorrectos.push(client.name);}

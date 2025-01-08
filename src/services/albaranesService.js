@@ -11,9 +11,9 @@ export const generateAlbaranes = async (month) => {
     }
 };
 
-export const getAlbaranes = async (clientId) => {
+export const getAlbaranes = async (clientId, estado) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/get-albaranes`, {params: { clientId },});
+    const response = await axios.get(`${API_BASE_URL}/get-albaranes`, {params: { clientId, estado },});
     return response.data;
   } catch (error) {
     throw error.response.data;

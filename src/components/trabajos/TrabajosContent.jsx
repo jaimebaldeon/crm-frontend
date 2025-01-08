@@ -19,6 +19,7 @@ const TrabajosContent = () => {
     const [showAlbaranForm, setShowAlbaranForm] = useState(false);
     const [showExtintoresForm, setShowExtintoresForm] = useState(false);
     const [editableAlbaran, setEditableAlbaran] = useState(null);
+    const [modificarExistente, setModificarExistente] = useState(false)
 
     const handleInputChange = (e) => setInputMes(e.target.value);
 
@@ -67,13 +68,13 @@ const TrabajosContent = () => {
 
     const handleAlbaranSearch = async (selectedClient) => {
       console.log('Cliente seleccionado:', selectedClient);
-      const resultList = await getAlbaranes(selectedClient.id_cliente);
+      const resultList = await getAlbaranes(selectedClient.id_cliente, modificarExistente);
       if (resultList.length > 0) {
         setAlbaranesList(resultList);
         setShowClientList(false);
         setShowAlbaranesList(true);
       } else {
-        setMessage("No se encontraron albaranes con los datos ingresados.");
+        alert("No se encontraron albaranes con los datos ingresados.")
         setShowAlbaranesList(false);
       }
     };
@@ -89,12 +90,18 @@ const TrabajosContent = () => {
       console.log('Albarán modificado:', verifiedAlbaran);
       setShowAlbaranForm(false); // Hide AlbaranForm
     
-      if (hasNuevosExtintores) {
+      if (hasNuevosExtintores) { // && !modificarExistente
+        alert("Rellena los datos de los nuevos extintores")
         setEditableAlbaran(verifiedAlbaran); // Pass the albarán data to ExtintoresForm
         setShowExtintoresForm(true); // Show ExtintoresForm
       }
       else {
+        // !!
+        // CHECK RETIMBRADOS
+        // !!
         const responseAlbaranUpdate = await updateAlbaran(verifiedAlbaran);
+        setShowTrabajoSearch(false);
+        alert("Albaran actualizado con exito")
       }
     };
 
@@ -105,6 +112,8 @@ const TrabajosContent = () => {
       const responseAlbaranUpdate = await updateAlbaran(editableAlbaran);
       // !!
       setShowExtintoresForm(false); // Hide ExtintoresForm after submission
+      setShowTrabajoSearch(false);
+      alert("Albaran actualizado con exito")
     };
 
     return (
@@ -133,9 +142,19 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
+                    setModificarExistente(false);
                   }}
                 >
                   Verificar Trabajo
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowTrabajoSearch(true);
+                    setModificarExistente(true);
+                  }}
+                >
+                  Modificar Trabajo
                 </button>
               </>
             )}

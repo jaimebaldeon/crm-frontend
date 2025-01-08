@@ -71,7 +71,7 @@ exports.saveExtintores = async (extintoresData, contratoId) => {
 
 exports.getExtintoresCaducados = async (extintoresData) => {
   extintoresData.clientId
-  const query = `SELECT * FROM activos WHERE id_contrato = $1 AND fecha_fabricacion <= EXTRACT(YEAR FROM CURRENT_DATE) - 20`;
+  const query = `SELECT * FROM activos WHERE id_contrato = $1 AND fecha_fabricacion <= EXTRACT(YEAR FROM CURRENT_DATE) - 20 AND estado = 'ACTIVO'`;
   const result = await pool.query(query, [extintoresData.contratoId]);
   return result.rows;
 };
@@ -103,10 +103,11 @@ exports.updateExtintoresRetimbrados = async (extintoresData) => {
       AND (
             (
                     fecha_retimbrado <= EXTRACT(YEAR FROM CURRENT_DATE) - 5
-                AND fecha_fabricacion < EXTRACT(YEAR FROM CURRENT_DATE) - 20
+                AND fecha_fabricacion > EXTRACT(YEAR FROM CURRENT_DATE) - 20
             )
             OR (
-                fecha_fabricacion <= EXTRACT(YEAR FROM CURRENT_DATE) - 5
+                    fecha_retimbrado IS NULL
+                AND fecha_fabricacion <= EXTRACT(YEAR FROM CURRENT_DATE) - 5
             )
       )
       AND estado = 'ACTIVO'
