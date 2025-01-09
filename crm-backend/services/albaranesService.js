@@ -35,6 +35,13 @@ async function deleteAlbaranesPendientesByMonth(month, year) {
   return result.rows;
 }
 
+// Delete albaran by Id Albaran
+async function deleteAlbaranByIdAlbaran(idAlbaran) {
+  const query = `DELETE FROM data_trabajos WHERE id_albaran = $1 RETURNING *`;
+  const result = await pool.query(query, [idAlbaran]);
+  return result.rows;
+}
+
 // Get client data for a specific contract from the database
 async function getClientByContract(contract) {
     try {
@@ -422,5 +429,6 @@ module.exports = {
   getContractPrices,
   insertAlbaranes,
   getAlbaranesByClientId,
-  updateAlbaran
+  updateAlbaran,
+  deleteAlbaranByIdAlbaran
 };

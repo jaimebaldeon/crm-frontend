@@ -28,3 +28,15 @@ export const updateAlbaran = async (albaranData) => {
     throw error.response.data;
   }
 };
+
+export const deleteAlbaran = async (idAlbaran) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/delete-albaran`, { idAlbaran });
+    return response.data;
+  } catch (error) {
+    if (error.response.status === 404) {
+      throw error.response.data;
+    }
+    throw error.response.data;
+  }
+};

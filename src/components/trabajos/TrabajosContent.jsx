@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { generateAlbaranes, getAlbaranes, updateAlbaran } from '../../services/albaranesService';  
+import { generateAlbaranes, getAlbaranes, updateAlbaran, deleteAlbaran } from '../../services/albaranesService';  
 import SearchClientForm from './SearchClientForm';
 import ClientResultList from './ClientResultList';
 import AlbaranesResultList from './AlbaranesResultList';
@@ -20,8 +20,11 @@ const TrabajosContent = () => {
     const [showExtintoresForm, setShowExtintoresForm] = useState(false);
     const [editableAlbaran, setEditableAlbaran] = useState(null);
     const [modificarExistente, setModificarExistente] = useState(false)
+    const [inputIdAlbaran, setInputIdAlbaran] = useState('')
 
-    const handleInputChange = (e) => setInputMes(e.target.value);
+
+    const handleInputChangeMes = (e) => setInputMes(e.target.value);
+    const handleInputChangeIdAlbaran = (e) => setInputIdAlbaran(e.target.value);
 
     const validateMonth = (month) => {
         const validMonths = [
@@ -96,9 +99,6 @@ const TrabajosContent = () => {
         setShowExtintoresForm(true); // Show ExtintoresForm
       }
       else {
-        // !!
-        // CHECK RETIMBRADOS
-        // !!
         const responseAlbaranUpdate = await updateAlbaran(verifiedAlbaran);
         setShowTrabajoSearch(false);
         alert("Albaran actualizado con exito")
@@ -107,14 +107,26 @@ const TrabajosContent = () => {
 
     const handleAlbaranUpdate = async (extintoresData) => {
       console.log('Datos de extintores:', extintoresData);
-      // !!
-      // ACTUALIZAR BBDD ALBARAN
       const responseAlbaranUpdate = await updateAlbaran(editableAlbaran);
-      // !!
       setShowExtintoresForm(false); // Hide ExtintoresForm after submission
       setShowTrabajoSearch(false);
       alert("Albaran actualizado con exito")
     };
+
+    const deleteAlbaranFunct = async (idAlbaran) => {
+      if (false) {
+        setMessage('Mes no válido. Introduzca un mes en español (e.g., enero, febrero).');
+        return;
+      }
+  
+      try {
+        const deleteAlbaranResponse = await deleteAlbaran(idAlbaran);
+        alert(deleteAlbaranResponse.message || 'Albaran eliminado correctamente.');
+      } catch (error) {
+        alert(error.message);
+        console.error(error);
+      }
+  };
 
     return (
         <div className="content-section">
@@ -127,7 +139,7 @@ const TrabajosContent = () => {
                   placeholder="Ingrese el mes"
                   className="input-field"
                   value={inputMes} 
-                  onChange={handleInputChange} 
+                  onChange={handleInputChangeMes} 
                 />
                 <button
                   className="action-button"
@@ -153,8 +165,24 @@ const TrabajosContent = () => {
                     setShowTrabajoSearch(true);
                     setModificarExistente(true);
                   }}
+                  disabled={true}
                 >
                   Modificar Trabajo
+                </button>
+                <input
+                  type="text"
+                  placeholder="Ingrese el id albaran"
+                  className="input-field"
+                  value={inputIdAlbaran} 
+                  onChange={handleInputChangeIdAlbaran} 
+                />
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    deleteAlbaranFunct(inputIdAlbaran);
+                  }}
+                >
+                  Eliminar Albaran
                 </button>
               </>
             )}
