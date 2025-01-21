@@ -64,7 +64,7 @@ export const validateForm = async (formData, contractData) => {
         // Chequear que los datos introducidos corresponden con el contrato
         let contractErrors;
 
-        if (!'id_albaran' in contractData) {
+        if (!('id_albaran' in contractData)) {
           contractErrors = validateContractWithFormData(contractData, formData)
         } else {
           contractErrors = await validateAlbaranWithFormData(contractData, formData)

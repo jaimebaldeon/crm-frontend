@@ -88,7 +88,16 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
     setErrors({});
     try {
         const response = await submitContractForm(contractData);
-        onSubmit(contractData) // Trigger parent callback after successful API submission
+
+        // Guardar Id_Contrato del contrato recien creado
+        const updatedContractData = {
+          ...contractData,
+          id_contrato: response.contratoId,
+        };
+        // Update state with the new contract data
+        setContractData(updatedContractData);
+        
+        onSubmit(updatedContractData) // Trigger parent callback after successful API submission
       } catch (error) {
         alert('Error enviando formulario: ' + error.message);
       }

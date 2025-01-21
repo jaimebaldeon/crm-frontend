@@ -16,6 +16,13 @@ const SearchClientForm = ({ onSubmit, onCancel }) => {
         onSubmit: async (values) => {
           try {
             const response = await searchClientes(values);
+
+            // Handle empty results
+            if (response.length === 0) {
+              alert('No se encontraron resultados. Intente con otra búsqueda.');
+              return;
+            }
+
             onSubmit(response); // Trigger parent callback after successful API submission
           } catch (error) {
             alert('Error enviando formulario: ' + error.message);
