@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import ClientForm from './ClientForm';
 import ContractForm from './ContractForm'; 
 import ExtintoresForm from '../activos/ExtintoresForm';
+import SearchClientForm from '../trabajos/SearchClientForm';
+import ClientResultList from '../trabajos/ClientResultList';
+import { getContratos } from '../../services/contratosService';  
+
 
 const ContratosContent = () => {
     const [showClientForm, setShowClientForm] = useState(false);
@@ -10,7 +14,10 @@ const ContratosContent = () => {
     const [createdClient, setCreatedClient] = useState(null); // Store created client data
     const [createdContract, setCreatedContract] = useState(null);
     const [formType, setFormType] = useState('');
-
+    const [showClientSearch, setShowClientSearch] = useState(false);
+    const [clientList, setClientList] = useState([]);
+    const [showClientList, setShowClientList] = useState(false);
+  
     const handleClientSubmit = (clientData) => {
         console.log('Formulario enviado:', clientData);
         if (formType === 'create') {
@@ -27,7 +34,9 @@ const ContratosContent = () => {
     const handleClientCancel = () => {
         const confirmCancel = window.confirm("¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.");
         if (confirmCancel) {
-            setShowClientForm(false); // Hide the ClientForm if user confirms cancellation
+            // Hide the current window if user confirms cancellation
+            setShowClientForm(false); 
+            setShowClientSearch(false)
         }
     };
 
@@ -64,10 +73,36 @@ const ContratosContent = () => {
         }
     };
 
+    const handleClientSearch = (resultList) => {
+      console.log('Formulario enviado:', resultList)
+      // display client search list showing columns: nombre, cif and direccion
+      if (resultList.length > 0) {
+        setClientList(resultList);
+        setShowClientList(true);
+      } else {
+        alert("No se encontraron clientes con los datos ingresados.");
+        setShowClientList(false);
+      }
+    
+    };
+
+    const handleContratoSearch = async (selectedClient) => {
+          console.log('Cliente seleccionado:', selectedClient);
+          const resultList = await getContratos(selectedClient.id_cliente);
+          if (resultList.length > 0) {
+          //   setAlbaranesList(resultList);
+          //   setShowClientList(false);
+          //   setShowAlbaranesList(true);
+          } else {
+            alert("No se encontraron albaranes con los datos ingresados.")
+            // setShowAlbaranesList(false);
+          }
+    };
+
     return (
         <div className="content-section">
           <h2>Contratos</h2>
-          {!showClientForm && !showContractForm && !showExtintoresForm && (
+          {!showClientForm && !showContractForm && !showExtintoresForm && !showClientSearch && (
             <>
               <button
                 className="action-button"
@@ -81,7 +116,7 @@ const ContratosContent = () => {
               <button
                 className="action-button"
                 onClick={() => {
-                  // setShowClientForm(true);                    
+                  setShowClientSearch(true);                    
                   setFormType('modify');
                 }}
               >
@@ -115,6 +150,25 @@ const ContratosContent = () => {
               contract={createdContract} // Pass the created contract to the ExtintoresForm
               onSubmit={handleExtintoresSubmit}
               onCancel={handleExtintoresCancel}
+            />
+          )}
+
+          {/* Show the Client Search Form */}
+          {showClientSearch && !showClientList && (
+              <SearchClientForm
+                onSubmit={handleClientSearch}
+                onCancel={handleClientCancel}
+              />
+            )}
+
+          {/* Show Client Search Result List as a selection list */}
+          {showClientList && clientList.length > 0 && (
+            <ClientResultList
+              clientList={clientList}
+              onSubmit={handleContratoSearch}
+              onCancel={() => {
+                setShowClientList(false);
+              }}
             />
           )}
           

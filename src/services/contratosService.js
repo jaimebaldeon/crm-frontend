@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:5000/api';
+
 export const submitContractForm = async (contractData) => {
   try {
-    const response = await axios.post('http://localhost:5000/api/contratos', contractData);
+    const response = await axios.post(`${API_BASE_URL}/contratos`, contractData);
     return response.data;
   } catch (error) {
     // if (error.response.status == 400) {
@@ -12,5 +14,14 @@ export const submitContractForm = async (contractData) => {
     // throw new Error('Failed to submit client form');
     throw error.response.data;
 
+  }
+};
+
+export const getContratos = async (clientId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/get-contratos`, {params: { clientId },});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
   }
 };
