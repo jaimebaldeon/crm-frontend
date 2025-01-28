@@ -240,6 +240,7 @@ const TrabajosContent = () => {
                 onCancel={() => {
                   setShowExtintoresForm(false); // Hide ExtintoresForm on cancel
                 }}
+                formType={'trabajos'}
               />
             )}
 

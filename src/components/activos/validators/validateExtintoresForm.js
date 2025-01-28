@@ -3,26 +3,6 @@ import { getConceptoByDescCorta } from '../../../services/productosServiciosServ
 
 
 export const validateForm = async (formData, contractData) => {
-        /*BORRAR*/
-        // const contractData =
-        //   {
-        //     clientId: 4760,
-        //     products: [
-        //       {
-        //         productoServicio: "EXTINTOR POLVO 6 KG",
-        //         cantidad: "1",
-        //         precio: "0.01",
-        //       },
-        //       {
-        //         productoServicio: "EXTINTOR POLVO 2 KG",
-        //         cantidad: "1",
-        //         precio: "0.02",
-        //       },
-        //     ],
-        //     hasExtintores: true,
-        //     tipo: "",
-        //   }
-
 
         let errors = {};
 
@@ -50,7 +30,7 @@ export const validateForm = async (formData, contractData) => {
           }
       
           // Ensure "Extintor" and "Marca_Modelo" are not empty
-          if (!row.Extintor) {
+          if (!row.Nombre) {
             errors[`Extintor_${index}`] = 'El campo Extintor es obligatorio';
           }
           if (!row.Marca_Modelo) {
@@ -82,24 +62,37 @@ export const validateContractWithFormData = (contractData, formData) => {
       
         // Create a map of product quantities from formData
         const formDataMap = formData.reduce((acc, item) => {
-          const { Extintor } = item;
-          acc[Extintor] = (acc[Extintor] || 0) + 1; // Count occurrences of each product
+          const { Nombre } = item;
+          acc[Nombre] = (acc[Nombre] || 0) + 1; // Count occurrences of each product
           return acc;
         }, {});
       
         // Check each product in contractData against the formDataMap
         contractData.products.forEach((product, index) => {
           const { productoServicio, cantidad } = product;
-          const expectedQuantity = parseInt(cantidad, 10); // Quantity in contractData
-          const actualQuantity = formDataMap[productoServicio] || 0; // Quantity in formData
+
+          // Only validate extintores (no alumbrados, centrales...)
+          if (productoServicio.toLowerCase().includes("extintor")) {
+            const expectedQuantity = parseInt(cantidad, 10); // Quantity in contractData
+            const actualQuantity = formDataMap[productoServicio] || 0; // Quantity in formData
       
-          if (actualQuantity !== expectedQuantity) {
-            errors[`product_${index}`] = `La cantidad de ${productoServicio} no coincide. Esperado: ${expectedQuantity}, Encontrado: ${actualQuantity}`;
+            if (actualQuantity !== expectedQuantity) {
+              errors[`product_${index}`] = `La cantidad de ${productoServicio} no coincide. Esperado: ${expectedQuantity}, Encontrado: ${actualQuantity}`;
+            }
           }
+
+          // Remove matched product from formDataMap to handle extra products
+          delete formDataMap[productoServicio];
+        });
+
+        // Validate that no extra products exist in formDataMap
+        Object.keys(formDataMap).forEach((extraProduct, index) => {
+          const extraQuantity = formDataMap[extraProduct];
+          errors[`extra_product_${index}`] = `Producto extra encontrado: ${extraProduct} con cantidad: ${extraQuantity}`;
         });
       
         return errors;
-      };
+  };
 
 const albaran2ProductsDict = async (rawAlbaranData) => {
   // Filter the productos_servicios array to include only items containing "Nuevo extintor"
@@ -131,8 +124,8 @@ export const validateAlbaranWithFormData = async (rawAlbaranData, formData) => {
 
   // Create a map of product quantities from formData
   const formDataMap = formData.reduce((acc, item) => {
-    const { Extintor } = item;
-    acc[Extintor] = (acc[Extintor] || 0) + 1; // Count occurrences of each product
+    const { Nombre } = item;
+    acc[Nombre] = (acc[Nombre] || 0) + 1; // Count occurrences of each product
     return acc;
   }, {});
 

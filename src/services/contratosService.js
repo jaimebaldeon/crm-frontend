@@ -19,9 +19,19 @@ export const submitContractForm = async (contractData) => {
 
 export const getContratos = async (clientId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/get-contratos`, {params: { clientId },});
+    const response = await axios.get(`${API_BASE_URL}/contratos/contratos-cliente`, {params: { clientId },});
     return response.data;
   } catch (error) {
     throw error.response.data;
+  }
+};
+
+export const updateContract = async (contractData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/contratos/update-contrato`, contractData);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+
   }
 };

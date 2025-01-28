@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ContractForm.css'; 
-import {validateForm} from './validators/validateContractForm'
+// import {validateForm} from './validators/validateContractForm'
+import { getProductosMantenibles } from '../../services/productosServiciosService';
 import { submitContractForm } from '../../services/contratosService';
 
 const ContractForm = ({ client, onSubmit, onCancel }) => {
 
   const [productosServicios, setProductosServicios] = useState([]);
-  const [errors, setErrors] = useState({});
   const [contractData, setContractData] = useState({
-    clientId: client, // Initialize with the created client's ID
+    id_cliente: client, // Initialize with the created client's ID
     products: [
       {
         productoServicio: '',
@@ -24,8 +24,8 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
   // Fetch data from the API
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/productos-mantenibles');
-      setProductosServicios(response.data);
+      const productosServiciosResponse = await getProductosMantenibles();      
+      setProductosServicios(productosServiciosResponse);
     } catch (error) {
       console.error('Error fetching productos y servicios data', error);
     }
@@ -80,12 +80,12 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validateForm(contractData);
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-    setErrors({});
+    // const validationErrors = validateForm(contractData);
+    // if (Object.keys(validationErrors).length > 0) {
+    //   setErrors(validationErrors);
+    //   return;
+    // }
+    // setErrors({});
     try {
         const response = await submitContractForm(contractData);
 
@@ -98,7 +98,7 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
         setContractData(updatedContractData);
         
         onSubmit(updatedContractData) // Trigger parent callback after successful API submission
-      } catch (error) {
+    } catch (error) {
         alert('Error enviando formulario: ' + error.message);
       }
   }; 
@@ -111,7 +111,7 @@ const ContractForm = ({ client, onSubmit, onCancel }) => {
       <h3>Products/Services</h3>
       <div className="product-entry">
         <label>
-                TIpo Contrato:
+                Tipo Contrato:
                 <select
                     name="tipo"
                     value={contractData.tipo}

@@ -23,10 +23,20 @@ export const fetchMarcaOptions = async () => {
   }
 };
 
-// Submit Datos Extintores
-export const submitExtintoresForm = async (extintoresData, contratoId) => {
+export const fetchExistingExtintores = async (clientId, contratoId) => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/datos-extintores`, {extintoresData, contratoId});
+    const response = await axios.get(`${API_BASE_URL}/datos-extintores/extintores`, {params: { clientId,  contratoId},});
+    return response.data; 
+  } catch (error) {
+    console.error("Error fetching existing extintores:", error);
+    throw error.response.data;
+  }
+};
+
+// Submit Datos Extintores
+export const saveActivos = async (activosData, contratoId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores`, {activosData, contratoId});
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -61,5 +71,16 @@ export const updateExtintoresRetimbrados = async (clientId, contratoId) => {
     return response.data;
   } catch (error) {
     throw error.response.data;
+  }
+};
+
+// Update Datos Extintores
+export const updateActivos = async (activosData, contratoId) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/datos-extintores/update`, {activosData, contratoId});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+
   }
 };

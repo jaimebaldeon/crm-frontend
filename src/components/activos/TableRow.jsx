@@ -7,8 +7,8 @@ const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = 
       {/* Tipo Extintor - Render as a select input */}
       <td>
         <select
-          value={rowData.Extintor}
-          onChange={(e) => onInputChange(rowIndex, 'Extintor', e.target.value)}
+          value={rowData.Nombre}
+          onChange={(e) => onInputChange(rowIndex, 'Nombre', e.target.value)}
         >
           <option value="">Select Extintor</option>
           {tipoExtintorOptions.length > 0 ? (
@@ -44,7 +44,7 @@ const TableRow = ({ rowData, rowIndex, tipoExtintorOptions = [], marcaOptions = 
 
       {/* Other fields - Render as regular text inputs */}
       {Object.keys(rowData).map((field, index) => {
-        if (field !== 'Extintor' && field !== 'Marca_Modelo' && field !== 'Id_Cliente') {
+        if (field !== 'Nombre' && field !== 'Marca_Modelo' && field !== 'Id_Cliente') {
           return (
             <td key={index}>
               <TableInput
