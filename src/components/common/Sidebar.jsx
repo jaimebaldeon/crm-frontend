@@ -16,6 +16,9 @@ const Sidebar = ({ isCollapsed, toggleSidebar, activeSection, setActiveSection }
         <li className={`menu-item ${activeSection === 'Home' ? 'active' : ''}`} onClick={() => setActiveSection('Home')}>
           Home
         </li>
+        <li className={`menu-item ${activeSection === 'Clientes' ? 'active' : ''}`} onClick={() => setActiveSection('Clientes')}>
+          Clientes
+        </li>
         <li className={`menu-item ${activeSection === 'Contratos' ? 'active' : ''}`} onClick={() => setActiveSection('Contratos')}>
           Contratos
         </li>

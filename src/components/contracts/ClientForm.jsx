@@ -7,6 +7,8 @@ import AddressForm from './AddressForm';
 import { validateForm } from './validators/validateClientForm';
 import { transformData } from '../../utils/transformData';
 import { submitClientForm } from '../../services/clientService';
+import { getCategoriaEstablecimiento } from '../../services/categoriaEstablecimientoService';
+
 
 
 
@@ -18,8 +20,9 @@ const ClientForm = ({ onSubmit, onCancel }) => {
    // Fetch data from the API
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tipoEstablecimiento');
-      setTiposEstablecimiento(response.data);
+      // const response = await axios.get('http://localhost:5000/api/tipoEstablecimiento');
+      const categoriaEstablecimiento = await getCategoriaEstablecimiento(); 
+      setTiposEstablecimiento(categoriaEstablecimiento);
     } catch (error) {
       console.error('Error fetching tipo establecimiento data', error);
     }

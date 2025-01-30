@@ -1,6 +1,7 @@
 // components/dashboard/DashboardContent.jsx
 import React from 'react';
 import HomeContent from '../home/HomeContent';
+import ClientesContent from '../clientes/ClientesContent';
 import ContratosContent from '../contracts/ContratosContent';
 import TrabajosContent from '../trabajos/TrabajosContent';
 import './DashboardContent.css'; 
@@ -10,6 +11,8 @@ const DashboardContent = ({ activeSection }) => {
     switch (activeSection) {
       case 'Home':
         return <HomeContent />;
+        case 'Clientes':
+          return <ClientesContent />;
       case 'Contratos':
         return <ContratosContent />;
       case 'Trabajos':

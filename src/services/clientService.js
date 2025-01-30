@@ -26,3 +26,13 @@ export const searchClientes = async (searchData) => {
 
   }
 };
+
+export const updateCliente = async (clienteData) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/clientes/update-cliente`, clienteData);
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+
+  }
+};
