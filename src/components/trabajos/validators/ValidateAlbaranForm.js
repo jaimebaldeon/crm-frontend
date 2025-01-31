@@ -1,9 +1,34 @@
-import { getExtintoresCaducados } from '../../../services/extintoresService'; 
+import { getExtintoresNuevos, getExtintoresCaducados } from '../../../services/extintoresService'; 
 
 export const existenNuevosExtintores = (formData) => {
     if (formData.productos_servicios.some(c => c.includes('Nuevo extintor'))) {
         return true
     } else {
+        return false
+    }
+}
+
+export const esNuevoContrato = async (albaranData) => {
+    // Comprobar extintores nuevos del contrato en BBDD Activos
+    const extintoresNuevos = await getExtintoresNuevos(albaranData.id_cliente, albaranData.id_contrato)
+    
+    /// Extraer cantidad de nuevos extintores en albaran verificado
+    const listaNuevos = albaranData.productos_servicios.filter((c) =>
+        c.includes("Nuevo extintor")
+    );
+    
+    const listaNuevosCantidades = listaNuevos.map((concepto) =>
+        Number(albaranData.cantidades[albaranData.productos_servicios.indexOf(concepto)])
+    );
+    
+    // Calcular el total de cantidades
+    const totalNuevosCantidades = listaNuevosCantidades.reduce((sum, cantidad) => sum + cantidad, 0);
+
+    // Si los extintores nuevos coinciden con los del contrato >> Nuevo contrato
+    if (extintoresNuevos.length == totalNuevosCantidades) {
+        return true
+    } else {
+        // alert("Los extintores en BBDD no coinciden);
         return false
     }
 }

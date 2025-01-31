@@ -44,6 +44,16 @@ export const saveActivos = async (activosData, contratoId) => {
   }
 };
 
+// Get Extintores Nuevos del cliente
+export const getExtintoresNuevos = async (clientId, contratoId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/datos-extintores/nuevos`, {params: { clientId,  contratoId},});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
 // Get Extintores Caducados del cliente
 export const getExtintoresCaducados = async (clientId, contratoId) => {
   try {

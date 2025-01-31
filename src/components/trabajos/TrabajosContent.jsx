@@ -5,6 +5,7 @@ import ClientResultList from './ClientResultList';
 import AlbaranesResultList from './AlbaranesResultList';
 import AlbaranForm from './AlbaranForm';
 import ExtintoresForm from '../activos/ExtintoresForm';
+import ViewAlbaran from './ViewAlbaran';
 
 
 const TrabajosContent = () => {
@@ -19,8 +20,10 @@ const TrabajosContent = () => {
     const [showAlbaranForm, setShowAlbaranForm] = useState(false);
     const [showExtintoresForm, setShowExtintoresForm] = useState(false);
     const [editableAlbaran, setEditableAlbaran] = useState(null);
-    const [modificarExistente, setModificarExistente] = useState(false)
+    const [buscarExistente, setBuscarExistente] = useState(false)
     const [inputIdAlbaran, setInputIdAlbaran] = useState('')
+    const [showAlbaranView, setShowAlbaranView] = useState(false);
+
 
 
     const handleInputChangeMes = (e) => setInputMes(e.target.value);
@@ -71,7 +74,7 @@ const TrabajosContent = () => {
 
     const handleAlbaranSearch = async (selectedClient) => {
       console.log('Cliente seleccionado:', selectedClient);
-      const resultList = await getAlbaranes(selectedClient.id_cliente, modificarExistente);
+      const resultList = await getAlbaranes(selectedClient.id_cliente, buscarExistente);
       if (resultList.length > 0) {
         setAlbaranesList(resultList);
         setShowClientList(false);
@@ -86,14 +89,18 @@ const TrabajosContent = () => {
       console.log('Albaran seleccionado:', selectedAlbaran);
       setAlbaranVerificable(selectedAlbaran);
       setShowAlbaranesList(false);
-      setShowAlbaranForm(true);
+      if (buscarExistente) {
+        setShowAlbaranView(true);
+      } else {
+        setShowAlbaranForm(true);
+      }
     };
 
     const handleAlbaranSubmit = async (verifiedAlbaran, hasNuevosExtintores) => {
       console.log('Albarán modificado:', verifiedAlbaran);
       setShowAlbaranForm(false); // Hide AlbaranForm
     
-      if (hasNuevosExtintores) { // && !modificarExistente
+      if (hasNuevosExtintores) { // && !buscarExistente
         alert("Rellena los datos de los nuevos extintores")
         setEditableAlbaran(verifiedAlbaran); // Pass the albarán data to ExtintoresForm
         setShowExtintoresForm(true); // Show ExtintoresForm
@@ -154,7 +161,7 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
-                    setModificarExistente(false);
+                    setBuscarExistente(false);
                   }}
                 >
                   Verificar Trabajo
@@ -163,7 +170,16 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
-                    setModificarExistente(true);
+                    setBuscarExistente(true);
+                  }}
+                >
+                  Buscar Trabajo
+                </button>
+                <button
+                  className="action-button"
+                  onClick={() => {
+                    setShowTrabajoSearch(true);
+                    setBuscarExistente(true);
                   }}
                   disabled={true}
                 >
@@ -188,7 +204,7 @@ const TrabajosContent = () => {
             )}
 
             {/* Show Client Search Form */}
-            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && !showExtintoresForm && (
+            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && !showExtintoresForm && !showAlbaranView && (
               <SearchClientForm
                 onSubmit={handleClientSearch}
                 onCancel={handleClientCancel}
@@ -241,6 +257,18 @@ const TrabajosContent = () => {
                   setShowExtintoresForm(false); // Hide ExtintoresForm on cancel
                 }}
                 formType={'trabajos'}
+              />
+            )}
+
+            {/* Show Albaran Form */}
+            {showAlbaranView && (
+              <ViewAlbaran
+                albaran={albaranVerificable}
+                onCancel={() => {
+                  setShowTrabajoSearch(false)
+                  setShowAlbaranView(false);
+                  setMessage("");
+                }}
               />
             )}
 

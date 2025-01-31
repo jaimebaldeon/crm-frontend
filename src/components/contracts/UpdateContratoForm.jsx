@@ -177,9 +177,9 @@ const UpdateContratoForm = ({ contrato, onSubmit, onCancel }) => {
           </div>
           <div className="contract-row">
             <label>Mes de Mantenimiento:</label>
-            <select value={editableContrato.mes} onChange={(e) => setEditableContrato({...editableContrato, mes: e.target.value})}>
+            <select value={editableContrato.mes} onChange={(e) => setEditableContrato({...editableContrato, mes: e.target.value.toUpperCase()})}>
               {["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"].map(mes => (
-                <option key={mes} value={mes}>{mes}</option>
+                <option key={mes} value={mes.toUpperCase()}>{mes}</option>
               ))}
             </select>
             {/* <input type="text" value={editableContrato.mes} onChange={(e) => setEditableContrato({...editableContrato, mes: e.target.value})} /> */}
