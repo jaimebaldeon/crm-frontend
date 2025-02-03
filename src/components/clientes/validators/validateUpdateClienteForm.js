@@ -34,7 +34,7 @@ export const validateForm = (formData) => {
       }
     
       // Validate Actividad
-      if (!formData.actividad.trim()) {
+      if (formData.actividad && !formData.actividad.trim()) {
         errors.actividad = "La actividad es obligatoria.";
       }
     
@@ -51,7 +51,7 @@ export const validateForm = (formData) => {
     
       // Validate IBAN (assuming a general IBAN format)
       const ibanPattern = /^[A-Za-z]{2}\d{22}$/;
-      if (formData.iban.trim() !== '' && !ibanPattern.test(formData.iban)) {
+      if (formData.iban && formData.iban.trim() !== '' && !ibanPattern.test(formData.iban)) {
         errors.iban = "El IBAN no es válido.";
       }
       

@@ -132,7 +132,6 @@ const UpdateClienteForm = ({ cliente, onSubmit, onCancel }) => {
               type="text" 
               value={editableCliente.actividad} 
               onChange={(e) => handleInputChange("actividad", e.target.value)}
-              required
             />
           </div>
 
