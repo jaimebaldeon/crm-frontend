@@ -22,26 +22,30 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel, formType }) => {
         setTipoExtintorOptions(tipoExtintorResponse.data);
         setMarcaOptions(marcaResponse.data);
 
-        // Check for existing extintores for the given client and contract
-        const existingExtintores = await fetchExistingExtintores(contract.id_cliente, contract.id_contrato);
+        if (formType !== 'trabajos') {
 
-        // Update extintoresData with existing extintores or leave it empty
-        if (existingExtintores.length > 0) {
-          setExtintoresData(
-            existingExtintores.map((extintor) => ({
-              Id_Cliente: extintor.id_cliente,
-              Nombre: extintor.nombre,
-              Marca_Modelo: extintor.marca_modelo,
-              N_Identificador: extintor.n_identificador,
-              Fecha_Fabricacion: extintor.fecha_fabricacion || '',
-              Fecha_Retimbrado: extintor.fecha_retimbrado || '',
-              Ubicacion: extintor.ubicacion !== "NULL" ? extintor.ubicacion : '', 
-              Notas: extintor.notas !== "NULL" ? extintor.notas : '', 
-            }))
-          );
-        } else {
-          setExtintoresData([]); // Empty table
+          // Check for existing extintores for the given client and contract
+          const existingExtintores = await fetchExistingExtintores(contract.id_cliente, contract.id_contrato);
+
+          // Update extintoresData with existing extintores or leave it empty
+          if (existingExtintores.length > 0) {
+            setExtintoresData(
+              existingExtintores.map((extintor) => ({
+                Id_Cliente: extintor.id_cliente,
+                Nombre: extintor.nombre,
+                Marca_Modelo: extintor.marca_modelo,
+                N_Identificador: extintor.n_identificador,
+                Fecha_Fabricacion: extintor.fecha_fabricacion || '',
+                Fecha_Retimbrado: extintor.fecha_retimbrado || '',
+                Ubicacion: extintor.ubicacion !== "NULL" ? extintor.ubicacion : '', 
+                Notas: extintor.notas !== "NULL" ? extintor.notas : '', 
+              }))
+            );
+          } else {
+            setExtintoresData([]); // Empty table
+          }
         }
+        
       } catch (error) {
         console.error('Error inicializando el formulario:', error);
       }
@@ -86,6 +90,35 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel, formType }) => {
 
 
   const handleSubmit = async (e) => {
+
+    const getNonExtintores = (contract) => {
+      let nonExtintores = [];
+
+      // Solo para Contratos (Albaran solo actualiza Nuevos Extintores)
+      if (!("id_albaran" in contract)) {
+        nonExtintores = contract.products
+          .filter(
+            (product) =>
+              !product.productoServicio.toLowerCase().includes("extintor")
+          )
+          .map((product) => ({
+            Id_Cliente: contract.id_cliente,
+            Nombre: product.productoServicio,
+            Marca_Modelo: null,       // Not applicable for non-extintores
+            N_Identificador: null,    // Not applicable for non-extintores
+            Fecha_Fabricacion: null,  // Not applicable for non-extintores
+            Fecha_Retimbrado: null,   // Not applicable for non-extintores
+            Ubicacion: null,
+            Notas: null,
+            Cantidad: parseInt(product.cantidad, 10),
+            Tipo: null
+          }));
+      }
+
+      return nonExtintores;
+      
+    }
+
     e.preventDefault();
     const validationErrors = await validateForm(extintoresData, contract);
     if (Object.keys(validationErrors).length > 0) {
@@ -114,20 +147,7 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel, formType }) => {
           Tipo: null
         }));
 
-        const nonExtintores = contract.products
-          .filter((product) => !product.productoServicio.toLowerCase().includes("extintor")) // Exclude extintores
-          .map((product) => ({
-            Id_Cliente: contract.id_cliente,
-            Nombre: product.productoServicio,
-            Marca_Modelo: null, // Not applicable for non-extintores
-            N_Identificador: null, // Not applicable for non-extintores
-            Fecha_Fabricacion: null, // Not applicable for non-extintores
-            Fecha_Retimbrado: null, // Not applicable for non-extintores
-            Ubicacion: null,
-            Notas: null,
-            Cantidad: parseInt(product.cantidad, 10),
-            Tipo: null
-        }));
+        const nonExtintores = getNonExtintores(contract)
 
         const activosData = [...extintores, ...nonExtintores];
         
