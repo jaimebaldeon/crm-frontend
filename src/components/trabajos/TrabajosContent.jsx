@@ -20,7 +20,8 @@ const TrabajosContent = () => {
     const [showAlbaranForm, setShowAlbaranForm] = useState(false);
     const [showExtintoresForm, setShowExtintoresForm] = useState(false);
     const [editableAlbaran, setEditableAlbaran] = useState(null);
-    const [buscarExistente, setBuscarExistente] = useState(false)
+    const [buscarAceptado, setBuscarAceptado] = useState(false)
+    const [modificarAlbaran, setModificarAlbaran] = useState(false)
     const [inputIdAlbaran, setInputIdAlbaran] = useState('')
     const [showAlbaranView, setShowAlbaranView] = useState(false);
 
@@ -74,7 +75,7 @@ const TrabajosContent = () => {
 
     const handleAlbaranSearch = async (selectedClient) => {
       console.log('Cliente seleccionado:', selectedClient);
-      const resultList = await getAlbaranes(selectedClient.id_cliente, buscarExistente);
+      const resultList = await getAlbaranes(selectedClient.id_cliente, buscarAceptado);
       if (resultList.length > 0) {
         setAlbaranesList(resultList);
         setShowClientList(false);
@@ -89,7 +90,7 @@ const TrabajosContent = () => {
       console.log('Albaran seleccionado:', selectedAlbaran);
       setAlbaranVerificable(selectedAlbaran);
       setShowAlbaranesList(false);
-      if (buscarExistente) {
+      if (buscarAceptado && !modificarAlbaran) {
         setShowAlbaranView(true);
       } else {
         setShowAlbaranForm(true);
@@ -100,7 +101,7 @@ const TrabajosContent = () => {
       console.log('Albarán modificado:', verifiedAlbaran);
       setShowAlbaranForm(false); // Hide AlbaranForm
     
-      if (hasNuevosExtintores) { // && !buscarExistente
+      if (hasNuevosExtintores) { // && !buscarAceptado
         alert("Rellena los datos de los nuevos extintores")
         setEditableAlbaran(verifiedAlbaran); // Pass the albarán data to ExtintoresForm
         setShowExtintoresForm(true); // Show ExtintoresForm
@@ -112,8 +113,8 @@ const TrabajosContent = () => {
       }
     };
 
-    const handleAlbaranUpdate = async (extintoresData) => {
-      console.log('Datos de extintores:', extintoresData);
+    const handleAlbaranUpdate = async (activosData) => {
+      console.log('Datos de activos:', activosData);
       const responseAlbaranUpdate = await updateAlbaran(editableAlbaran);
       setShowExtintoresForm(false); // Hide ExtintoresForm after submission
       setShowTrabajoSearch(false);
@@ -161,7 +162,8 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
-                    setBuscarExistente(false);
+                    setBuscarAceptado(false);
+                    setModificarAlbaran(false)
                   }}
                 >
                   Verificar Trabajo
@@ -170,7 +172,8 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
-                    setBuscarExistente(true);
+                    setBuscarAceptado(true);
+                    setModificarAlbaran(false)
                   }}
                 >
                   Buscar Trabajo
@@ -179,9 +182,10 @@ const TrabajosContent = () => {
                   className="action-button"
                   onClick={() => {
                     setShowTrabajoSearch(true);
-                    setBuscarExistente(true);
+                    setBuscarAceptado(true);
+                    setModificarAlbaran(true)
                   }}
-                  disabled={true}
+                  // disabled={true}
                 >
                   Modificar Trabajo
                 </button>

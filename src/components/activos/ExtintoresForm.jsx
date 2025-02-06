@@ -159,7 +159,7 @@ const ExtintoresForm = ({ client, contract, onSubmit, onCancel, formType }) => {
           const response = await saveActivos(activosData, contract.id_contrato);
         }
         
-        onSubmit(extintoresData) // Trigger parent callback after successful API submission
+        onSubmit(activosData) // Trigger parent callback after successful API submission
       } catch (error) {
         alert('Error enviando formulario: ' + error.message);
       }
