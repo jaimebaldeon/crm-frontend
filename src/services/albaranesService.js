@@ -20,6 +20,15 @@ export const getAlbaranes = async (clientId, estado) => {
   }
 };
 
+export const getAlbaran = async (albaranId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/albaranes/get-albaran`, {params: { albaranId },});
+    return response.data;
+  } catch (error) {
+    throw error.response.data;
+  }
+};
+
 export const updateAlbaran = async (albaranData) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/update-albaran`, { albaranData });

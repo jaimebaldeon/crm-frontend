@@ -3,26 +3,22 @@ import { generateAlbaranes, getAlbaranes, updateAlbaran, deleteAlbaran } from '.
 import { generateFacturas, getFacturas, updateFactura, deleteFactura } from '../../services/facturasService';  
 import SearchClientForm from '../trabajos/SearchClientForm';
 import ClientResultList from '../trabajos/ClientResultList';
-import AlbaranesResultList from '../trabajos/AlbaranesResultList';
-import AlbaranForm from '../trabajos/AlbaranForm';
-import ExtintoresForm from '../activos/ExtintoresForm';
+import FacturasResultList from './FacturasResultList';
 import ViewAlbaran from '../trabajos/ViewAlbaran';
 
 
 const FacturasContent = () => {
     const [inputMes, setInputMes] = useState('')
     const [message, setMessage] = useState('');
-    const [showTrabajoSearch, setShowTrabajoSearch] = useState(false);
+    const [showFacturaSearch, setShowFacturaSearch] = useState(false);
     const [clientList, setClientList] = useState([]);
     const [showClientList, setShowClientList] = useState(false);
-    const [albaranesList, setAlbaranesList] = useState([]);
-    const [showAlbaranesList, setShowAlbaranesList] = useState(false);
+    const [facturasList, setFacturasList] = useState([]);
+    const [showFacturasList, setShowFacturasList] = useState(false);
     const [albaranVerificable, setAlbaranVerificable] = useState([]);
     const [showAlbaranForm, setShowAlbaranForm] = useState(false);
     const [showExtintoresForm, setShowExtintoresForm] = useState(false);
     const [editableAlbaran, setEditableAlbaran] = useState(null);
-    const [buscarExistente, setBuscarExistente] = useState(false)
-    const [inputIdAlbaran, setInputIdAlbaran] = useState('')
     const [showAlbaranView, setShowAlbaranView] = useState(false);
 
 
@@ -68,32 +64,28 @@ const FacturasContent = () => {
     const handleClientCancel = () => {
       const confirmCancel = window.confirm("¿Estás seguro de que deseas cancelar? Los datos ingresados se perderán.");
       if (confirmCancel) {
-        setShowTrabajoSearch(false); // Hide the ClientForm if user confirms cancellation
+        setShowFacturaSearch(false); // Hide the ClientForm if user confirms cancellation
       }
     };
 
-    const handleAlbaranSearch = async (selectedClient) => {
+    const handleFacturaSearch = async (selectedClient) => {
       console.log('Cliente seleccionado:', selectedClient);
-      const resultList = await getAlbaranes(selectedClient.id_cliente, buscarExistente);
+      const resultList = await getFacturas(selectedClient.id_cliente);
       if (resultList.length > 0) {
-        setAlbaranesList(resultList);
+        setFacturasList(resultList);
         setShowClientList(false);
-        setShowAlbaranesList(true);
+        setShowFacturasList(true);
       } else {
         alert("No se encontraron albaranes con los datos ingresados.")
-        setShowAlbaranesList(false);
+        setShowFacturasList(false);
       }
     };
 
-    const handleAlbaranVerfication = (selectedAlbaran) => {
-      console.log('Albaran seleccionado:', selectedAlbaran);
+    const handleFacturaVerfication = (selectedAlbaran) => {
+      console.log('Albaran de la factura seleccionada:', selectedAlbaran);
       setAlbaranVerificable(selectedAlbaran);
-      setShowAlbaranesList(false);
-      if (buscarExistente) {
-        setShowAlbaranView(true);
-      } else {
-        setShowAlbaranForm(true);
-      }
+      setShowFacturasList(false);
+      setShowAlbaranView(true);
     };
 
     const handleAlbaranSubmit = async (verifiedAlbaran, hasNuevosExtintores) => {
@@ -107,7 +99,7 @@ const FacturasContent = () => {
       }
       else {
         const responseAlbaranUpdate = await updateAlbaran(verifiedAlbaran);
-        setShowTrabajoSearch(false);
+        setShowFacturaSearch(false);
         alert("Albaran actualizado con exito")
       }
     };
@@ -116,7 +108,7 @@ const FacturasContent = () => {
       console.log('Datos de extintores:', extintoresData);
       const responseAlbaranUpdate = await updateAlbaran(editableAlbaran);
       setShowExtintoresForm(false); // Hide ExtintoresForm after submission
-      setShowTrabajoSearch(false);
+      setShowFacturaSearch(false);
       alert("Albaran actualizado con exito")
     };
 
@@ -125,7 +117,7 @@ const FacturasContent = () => {
         <div className="content-section">
           <h2>Facturas</h2>          
           <div className='facturas'>
-            {!showTrabajoSearch && (
+            {!showFacturaSearch && (
               <>
                 <input
                   type="text"
@@ -146,8 +138,7 @@ const FacturasContent = () => {
                 <button
                   className="action-button"
                   onClick={() => {
-                    setShowTrabajoSearch(true);
-                    setBuscarExistente(true);
+                    setShowFacturaSearch(true);
                   }}
                 >
                   Buscar Factura
@@ -155,8 +146,7 @@ const FacturasContent = () => {
                 <button
                   className="action-button"
                   onClick={() => {
-                    setShowTrabajoSearch(true);
-                    setBuscarExistente(true);
+                    setShowFacturaSearch(true);
                   }}
                   disabled={true}
                 >
@@ -166,7 +156,7 @@ const FacturasContent = () => {
             )}
 
             {/* Show Client Search Form */}
-            {showTrabajoSearch && !showClientList && !showAlbaranesList && !showAlbaranForm && !showExtintoresForm && !showAlbaranView && (
+            {showFacturaSearch && !showClientList && !showFacturasList && !showAlbaranForm && !showExtintoresForm && !showAlbaranView && (
               <SearchClientForm
                 onSubmit={handleClientSearch}
                 onCancel={handleClientCancel}
@@ -177,7 +167,7 @@ const FacturasContent = () => {
             {showClientList && clientList.length > 0 && (
               <ClientResultList
                 clientList={clientList}
-                onSubmit={handleAlbaranSearch}
+                onSubmit={handleFacturaSearch}
                 onCancel={() => {
                   setShowClientList(false);
                   setMessage("");
@@ -186,48 +176,24 @@ const FacturasContent = () => {
             )}
 
             {/* Show Albaran Search Result List as a selection list */}
-            {showAlbaranesList && albaranesList.length > 0 && (
-              <AlbaranesResultList
-                albaranesList={albaranesList}
-                onSubmit={handleAlbaranVerfication}
+            {showFacturasList && facturasList.length > 0 && (
+              <FacturasResultList
+                facturasList={facturasList}
+                onSubmit={handleFacturaVerfication}
                 onCancel={() => {
-                  setShowAlbaranesList(false);
+                  setShowFacturasList(false);
                   setMessage("");
                 }}
               />
             )}
 
-            {/* Show Albaran Form */}
-            {showAlbaranForm && (
-              <AlbaranForm
-                albaran={albaranVerificable}
-                onSubmit={ handleAlbaranSubmit}
-                onCancel={() => {
-                  setShowAlbaranForm(false);
-                  setMessage("");
-                }}
-              />
-            )}
-
-            {/* Show Extintores Form */}
-            {showExtintoresForm && (
-              <ExtintoresForm
-                client={editableAlbaran.id_cliente}
-                contract={editableAlbaran}
-                onSubmit={ handleAlbaranUpdate }
-                onCancel={() => {
-                  setShowExtintoresForm(false); // Hide ExtintoresForm on cancel
-                }}
-                formType={'trabajos'}
-              />
-            )}
 
             {/* Show Albaran Form */}
             {showAlbaranView && (
               <ViewAlbaran
                 albaran={albaranVerificable}
                 onCancel={() => {
-                  setShowTrabajoSearch(false)
+                  setShowFacturaSearch(false)
                   setShowAlbaranView(false);
                   setMessage("");
                 }}

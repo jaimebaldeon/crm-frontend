@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './AlbaranResultList.css'; 
+import './AlbaranesResultList.css'; 
 
 const AlbaranesResultList = ({ albaranesList, onCancel, onSubmit }) => {
   const [selectedAlbaran, setSelectedAlbaran] = useState(null);

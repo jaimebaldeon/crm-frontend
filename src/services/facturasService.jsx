@@ -11,9 +11,9 @@ export const generateFacturas = async (month) => {
     }
 };
 
-export const getFacturas = async (clientId, estado) => {
+export const getFacturas = async (clientId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/facturas/get-facturas`, {params: { clientId, estado },});
+    const response = await axios.get(`${API_BASE_URL}/facturas/get-facturas`, {params: { clientId },});
     return response.data;
   } catch (error) {
     throw error.response.data;

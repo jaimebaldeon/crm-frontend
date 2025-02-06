@@ -3,6 +3,7 @@ import '../contracts/ContractForm.css';
 
 const ViewAlbaran = ({ albaran, onCancel }) => {
   const {
+    id_albaran,
     id_contrato,
     id_cliente,
     productos_servicios,
@@ -24,6 +25,10 @@ const ViewAlbaran = ({ albaran, onCancel }) => {
       {/* 🔹 Información General del Albarán */}
       <fieldset className="contract-info">
         <legend>Información del Albarán</legend>
+        <div className="contract-row">
+          <label>ID Albaran:</label>
+          <input type="text" value={id_albaran} disabled />
+        </div>
         <div className="contract-row">
           <label>ID Contrato:</label>
           <input type="text" value={id_contrato} disabled />
