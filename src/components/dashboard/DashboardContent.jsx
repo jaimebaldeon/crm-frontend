@@ -5,6 +5,7 @@ import ClientesContent from '../clientes/ClientesContent';
 import ContratosContent from '../contracts/ContratosContent';
 import TrabajosContent from '../trabajos/TrabajosContent';
 import FacturasContent from '../facturas/FacturasContent';
+import CertificadosContent from '../certificados/CertificadosContent';
 import './DashboardContent.css'; 
 
 const DashboardContent = ({ activeSection }) => {
@@ -18,8 +19,10 @@ const DashboardContent = ({ activeSection }) => {
         return <ContratosContent />;
       case 'Trabajos':
         return <TrabajosContent />;
-        case 'Facturas':
+      case 'Facturas':
           return <FacturasContent />;
+      case 'Certificados':
+        return <CertificadosContent />;
       default:
         return <div>Select a section from the menu</div>;
     }

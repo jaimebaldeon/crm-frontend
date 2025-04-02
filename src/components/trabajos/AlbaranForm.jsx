@@ -6,6 +6,21 @@ import { checkExtintoresRetimbrados } from '../activos/validators/validateExtint
 
 
 const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
+  const {
+    id_albaran,
+    id_contrato,
+    id_cliente,
+    productos_servicios,
+    cantidades,
+    precios,
+    cuota,
+    mes,
+    año,
+    estado,
+    nota,
+    notas_adicionales,
+    fecha
+  } = albaran;
   const [editableAlbaran, setEditableAlbaran] = useState({ ...albaran });
   const [productosServicios, setProductosServicios] = useState([]);
 
@@ -75,6 +90,53 @@ const AlbaranForm = ({ albaran, onSubmit, onCancel }) => {
 
   return (
     <div className="albaran-form">
+      <h3>Detalles del Albarán</h3>
+
+      {/* 🔹 Información General del Albarán */}
+      <fieldset className="contract-info">
+        <legend>Información del Albarán</legend>
+        <div className="contract-row">
+          <label>ID Albaran:</label>
+          <input type="text" value={id_albaran} disabled />
+        </div>
+        <div className="contract-row">
+          <label>ID Contrato:</label>
+          <input type="text" value={id_contrato} disabled />
+        </div>
+        <div className="contract-row">
+          <label>ID Cliente:</label>
+          <input type="text" value={id_cliente} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Cuota:</label>
+          <input type="text" value={`€ ${cuota}`} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Mes:</label>
+          <input type="text" value={mes} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Año:</label>
+          <input type="text" value={año} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Estado:</label>
+          <input type="text" value={estado} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Nota:</label>
+          <input type="text" value={nota || "Sin nota"} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Notas Adicionales:</label>
+          <input type="text" value={notas_adicionales || "Sin notas adicionales"} disabled />
+        </div>
+        <div className="contract-row">
+          <label>Fecha:</label>
+          <input type="text" value={new Date(fecha).toLocaleDateString()} disabled />
+        </div>
+      </fieldset>
+
       <h3>Editar Albarán</h3>
       <form onSubmit={handleSubmit}>
         <table className="albaran-table">

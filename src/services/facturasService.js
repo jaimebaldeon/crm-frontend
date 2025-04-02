@@ -20,7 +20,7 @@ export const getFacturas = async (clientId) => {
   }
 };
 
-export const updateFactura = async (facturaData) => {
+export const updateFactura = async (facturaData, cuota) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/facturas/update-factura`, { facturaData });
     return response.data;

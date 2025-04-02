@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import './FacturasResultList.css'; 
+import './CertificadosResultList.css'; 
 import { getAlbaran } from '../../services/albaranesService';
 
-const FacturasResultList = ({ facturasList, onCancel, onSubmit }) => {
-  const [selectedFactura, setSelectedFactura] = useState(null);
+const CertificadosResultList = ({ facturasList, onCancel, onSubmit }) => {
+  const [selectedCertificado, setSelectedCertificado] = useState(null);
 
   const handleRowClick = (factura) => {
-    setSelectedFactura(factura); // Mark the clicked row as selected
+    setSelectedCertificado(factura); // Mark the clicked row as selected
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent the default form submission behavior
-    if (selectedFactura) {
+    if (selectedCertificado) {
       // Coger datos del albaran
-      const selectedAlbaran = await getAlbaran(selectedFactura.id_albaran)
-      selectedAlbaran.id_factura = selectedFactura.id_factura;
+      const selectedAlbaran = await getAlbaran(selectedCertificado.id_albaran)
+      selectedAlbaran.id_factura = selectedCertificado.id_factura;
 
       onSubmit(selectedAlbaran); // Pass the selected factura to the parent component
     } else {
@@ -28,7 +28,7 @@ const FacturasResultList = ({ facturasList, onCancel, onSubmit }) => {
       <table className="factura-table">
         <thead>
           <tr>
-            <th>Id Factura</th>
+            <th>Id Certificado</th>
             <th>Id Cliente</th>
             <th>Id Albaran</th>
             <th>Cuota</th>
@@ -39,7 +39,7 @@ const FacturasResultList = ({ facturasList, onCancel, onSubmit }) => {
           {facturasList.map((factura, index) => (
             <tr
               key={index}
-              className={selectedFactura === factura ? 'selected-row' : ''}
+              className={selectedCertificado === factura ? 'selected-row' : ''}
               onClick={() => handleRowClick(factura)} // Handle row selection
               style={{ cursor: 'pointer' }}
             >
@@ -60,4 +60,4 @@ const FacturasResultList = ({ facturasList, onCancel, onSubmit }) => {
   );
 };
 
-export default FacturasResultList;
+export default CertificadosResultList;
