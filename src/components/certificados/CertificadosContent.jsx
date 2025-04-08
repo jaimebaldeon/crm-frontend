@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { generateAlbaranes, getAlbaranes, updateAlbaran, deleteAlbaran } from '../../services/albaranesService'; 
-import { generateFacturas, getFacturas, updateFactura, deleteFactura } from '../../services/facturasService';  
+import { generateCertificados, getCertificados, updateCertificado, deleteCertificado } from '../../services/certificadosService';  
 import SearchClientForm from '../trabajos/SearchClientForm';
 import ClientResultList from '../trabajos/ClientResultList';
 import CertificadosResultList from './CertificadosResultList';
@@ -72,7 +72,7 @@ const CertificadosContent = () => {
 
     const handleCertificadoSearch = async (selectedClient) => {
       console.log('Cliente seleccionado:', selectedClient);
-      const resultList = await getFacturas(selectedClient.id_cliente);
+      const resultList = await getCertificados(selectedClient.id_cliente);
       if (resultList.length > 0) {
         setCertificadosList(resultList);
         setShowClientList(false);
@@ -105,7 +105,7 @@ const CertificadosContent = () => {
       }
       else {
         const responseAlbaranUpdate = await updateAlbaran(verifiedAlbaran);
-        const responseCertificadoUpdate = await updateFactura(verifiedAlbaran);
+        const responseCertificadoUpdate = await updateCertificado(verifiedAlbaran);
         setShowCertificadoSearch(false);
         alert("Albaran actualizado con exito")
       }
